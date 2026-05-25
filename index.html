@@ -20,10 +20,7 @@
     --kzn-yellow-dim:#B8A020;
     --kzn-black:#0A0A0A;
     --kzn-black-light:#141414;
-    --kzn-gray:#2A2A2A;
     --signal-cyan:#00E3FD;
-    --ui-dim:rgba(255,215,0,0.5);
-    --ui-bright:#FFD700;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -31,167 +28,163 @@
 html,body{
     height:100%;
     background:var(--kzn-black);
-    color:var(--ui-bright);
+    color:var(--kzn-yellow);
     font-family:'Space Grotesk',sans-serif;
     overflow:hidden;
     touch-action:none;
     -webkit-font-smoothing:antialiased;
 }
 
-/* === GRAINY STATIC (SOFTER) === */
+/* === DARK BASE LAYER === */
+.dark-base{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,215,0,0.03), transparent 60%),
+                linear-gradient(180deg, #0A0A0A 0%, #111111 40%, #0A0A0A 100%);
+}
+
+/* === SUBTLE STATIC (BACKGROUND ONLY) === */
 #static-canvas{
     position:fixed;
     inset:0;
     z-index:1;
     width:100%;
     height:100%;
-    opacity:0.3;
+    opacity:0.15;
+    pointer-events:none;
 }
 
-/* === SCANLINES === */
+/* === SCANLINES (SUBTLE) === */
 .scanlines{
     position:fixed;
     inset:0;
     z-index:2;
     pointer-events:none;
-    background:repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,0,0,0.08) 3px,
-        rgba(0,0,0,0.08) 6px
-    );
-    opacity:0.4;
+    background:repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0,0,0,0.05) 4px, rgba(0,0,0,0.05) 8px);
+    opacity:0.3;
 }
 
-/* === CRT VIGNETTE === */
-.crt-overlay{
+/* === VIGNETTE === */
+.vignette{
     position:fixed;
     inset:0;
     z-index:3;
     pointer-events:none;
-    background:radial-gradient(
-        ellipse 100% 100% at 50% 50%,
-        transparent 50%,
-        rgba(0,0,0,0.5) 100%
-    );
+    background:radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%);
 }
 
-/* === DECORATIVE FRAMES (STRONGER) === */
-.deco-frame{
+/* === DECO FRAMES === */
+.frame-corner{
     position:fixed;
-    z-index:10;
+    z-index:15;
     pointer-events:none;
+    width:70px;
+    height:70px;
+    border-color:var(--kzn-yellow);
+    border-style:solid;
+    opacity:0.7;
 }
+.frame-tl{top:20px;left:20px;border-width:3px 0 0 3px}
+.frame-tr{top:20px;right:20px;border-width:3px 3px 0 0}
+.frame-bl{bottom:20px;left:20px;border-width:0 0 3px 3px}
+.frame-br{bottom:20px;right:20px;border-width:0 3px 3px 0}
 
-.deco-frame.top-left{
-    top:24px;
-    left:24px;
-    width:80px;
-    height:80px;
-    border-left:3px solid var(--kzn-yellow);
-    border-top:3px solid var(--kzn-yellow);
-    opacity:0.8;
-}
-
-.deco-frame.top-right{
-    top:24px;
-    right:24px;
-    width:80px;
-    height:80px;
-    border-right:3px solid var(--kzn-yellow);
-    border-top:3px solid var(--kzn-yellow);
-    opacity:0.8;
-}
-
-.deco-frame.bottom-left{
-    bottom:24px;
-    left:24px;
-    width:80px;
-    height:80px;
-    border-left:3px solid var(--kzn-yellow);
-    border-bottom:3px solid var(--kzn-yellow);
-    opacity:0.8;
-}
-
-.deco-frame.bottom-right{
-    bottom:24px;
-    right:24px;
-    width:80px;
-    height:80px;
-    border-right:3px solid var(--kzn-yellow);
-    border-bottom:3px solid var(--kzn-yellow);
-    opacity:0.8;
-}
-
-/* === SOOON WATERMARK === */
-.sooon-watermark{
+/* === HEADER BAR === */
+.top-bar{
     position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    z-index:4;
+    top:0;
+    left:0;
+    right:0;
+    height:50px;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(10,10,10,0.8);
+    border-bottom:1px solid rgba(255,215,0,0.15);
+    backdrop-filter:blur(5px);
+}
+.top-bar-title{
     font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(5rem,18vw,12rem);
+    font-size:1.1rem;
+    font-weight:700;
+    color:var(--kzn-yellow);
+    letter-spacing:0.3em;
+}
+.top-bar-sub{
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.6rem;
+    color:rgba(255,215,0,0.4);
+    margin-left:12px;
+    letter-spacing:0.15em;
+}
+
+/* === SOOON HERO === */
+.hero-title{
+    position:fixed;
+    top:18%;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:10;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(4rem,15vw,10rem);
     font-weight:800;
-    letter-spacing:-0.04em;
-    color:rgba(255,215,0,0.08);
+    letter-spacing:-0.03em;
+    color:var(--kzn-yellow);
+    text-shadow:0 0 60px rgba(255,215,0,0.3), 0 0 120px rgba(255,215,0,0.1);
     text-transform:uppercase;
     pointer-events:none;
     white-space:nowrap;
-    user-select:none;
+    animation:heroPulse 3s ease-in-out infinite;
+}
+@keyframes heroPulse{
+    0%,100%{text-shadow:0 0 60px rgba(255,215,0,0.3)}
+    50%{text-shadow:0 0 80px rgba(255,215,0,0.5), 0 0 160px rgba(255,215,0,0.2)}
 }
 
-/* === SIGNAL PORTAL (CENTER, PROMINENT) === */
+/* === SIGNAL PORTAL (HIGHER — TOWARD STARS) === */
 .signal-portal{
     position:fixed;
-    top:40%;
+    top:32%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:300px;
-    height:380px;
-    z-index:5;
+    width:320px;
+    height:320px;
+    z-index:8;
     border-radius:50%;
     overflow:hidden;
-    box-shadow:0 0 60px rgba(255,215,0,0.1), inset 0 0 40px rgba(0,0,0,0.5);
     transition:all 0.8s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Outer glow bleed */
+/* Glow ring */
 .signal-portal::before{
     content:'';
     position:absolute;
-    inset:-80px;
-    border-radius:50%;
-    background:radial-gradient(
-        ellipse 50% 50% at 50% 50%,
-        rgba(255,215,0,0.25) 0%,
-        rgba(255,215,0,0.08) 40%,
-        transparent 70%
-    );
-    opacity:0;
-    transition:opacity 0.8s;
-    pointer-events:none;
-    filter:blur(40px);
-}
-.signal-portal.active::before{
-    opacity:1;
-}
-
-/* Inner bright ring */
-.signal-portal::after{
-    content:'';
-    position:absolute;
-    inset:-4px;
+    inset:-20px;
     border-radius:50%;
     border:2px solid rgba(255,215,0,0);
     transition:all 0.6s;
     pointer-events:none;
 }
-.signal-portal.active::after{
-    border-color:rgba(255,215,0,0.4);
-    box-shadow:0 0 30px rgba(255,215,0,0.3), inset 0 0 30px rgba(255,215,0,0.1);
+.signal-portal.active::before{
+    border-color:rgba(255,215,0,0.5);
+    box-shadow:0 0 50px rgba(255,215,0,0.4), 0 0 100px rgba(255,215,0,0.2), inset 0 0 50px rgba(255,215,0,0.1);
 }
+
+/* Outer soft glow */
+.signal-portal::after{
+    content:'';
+    position:absolute;
+    inset:-60px;
+    border-radius:50%;
+    background:radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255,215,0,0.15), transparent 70%);
+    opacity:0;
+    transition:opacity 0.8s;
+    pointer-events:none;
+    filter:blur(40px);
+}
+.signal-portal.active::after{opacity:1}
 
 #portal-video{
     position:absolute;
@@ -203,22 +196,19 @@ html,body{
     transition:opacity 0.6s;
     filter:contrast(1.3) saturate(1.2) brightness(0.9);
 }
-#portal-video.active{
-    opacity:1;
-}
+#portal-video.active{opacity:1}
 
 #portal-video.glitching{
     animation:portalGlitch 0.12s infinite;
 }
 @keyframes portalGlitch{
-    0%{transform:translate(0) scale(1);filter:contrast(1.3) saturate(1.2)}
+    0%{transform:translate(0) scale(1)}
     25%{transform:translate(-3px,1px) scale(1.02);filter:contrast(1.8) saturate(2) hue-rotate(30deg)}
-    50%{transform:translate(2px,-2px) scale(0.98);filter:contrast(0.8) saturate(0.5) hue-rotate(-20deg)}
+    50%{transform:translate(2px,-2px) scale(0.98);filter:contrast(0.8) saturate(0.5)}
     75%{transform:translate(-1px,3px) scale(1.01);filter:contrast(1.5) saturate(1.8)}
-    100%{transform:translate(0) scale(1);filter:contrast(1.3) saturate(1.2)}
+    100%{transform:translate(0) scale(1)}
 }
 
-/* Placeholder */
 .portal-placeholder{
     position:absolute;
     inset:0;
@@ -227,56 +217,46 @@ html,body{
     justify-content:center;
     transition:opacity 0.5s;
 }
-.portal-placeholder.hidden{
-    opacity:0;
-}
+.portal-placeholder.hidden{opacity:0}
 
 .placeholder-core{
-    width:120px;
-    height:120px;
+    width:80px;
+    height:80px;
     border-radius:50%;
-    background:radial-gradient(circle, rgba(255,215,0,0.5), transparent 70%);
-    animation:corePulse 2s infinite;
+    background:radial-gradient(circle, rgba(255,215,0,0.3), transparent 70%);
+    animation:corePulse 2.5s infinite;
 }
 @keyframes corePulse{
-    0%,100%{transform:scale(1);opacity:0.4}
-    50%{transform:scale(1.6);opacity:1}
+    0%,100%{transform:scale(1);opacity:0.3}
+    50%{transform:scale(1.4);opacity:0.8}
 }
 
 /* === SIGNAL BURST === */
 .signal-burst{
     position:fixed;
     inset:0;
-    z-index:6;
+    z-index:9;
     pointer-events:none;
     opacity:0;
     transition:opacity 0.05s;
-    background:radial-gradient(
-        ellipse 50% 60% at 50% 40%,
-        rgba(255,215,0,0.9) 0%,
-        rgba(255,215,0,0.3) 25%,
-        transparent 55%
-    );
+    background:radial-gradient(ellipse 50% 55% at 50% 35%, rgba(255,215,0,0.85) 0%, rgba(255,215,0,0.2) 30%, transparent 60%);
     mix-blend-mode:screen;
 }
-.signal-burst.active{
-    opacity:1;
-}
+.signal-burst.active{opacity:1}
 
 /* === SCAN BAR === */
 .scan-bar{
     position:fixed;
-    left:0;
-    right:0;
-    height:3px;
+    left:0;right:0;
+    height:2px;
     background:linear-gradient(90deg,transparent,var(--kzn-yellow),transparent);
-    z-index:7;
+    z-index:10;
     pointer-events:none;
     opacity:0;
-    box-shadow:0 0 15px var(--kzn-yellow);
+    box-shadow:0 0 12px var(--kzn-yellow);
 }
 .scan-bar.active{
-    opacity:0.7;
+    opacity:0.6;
     animation:scanMove 0.5s linear;
 }
 @keyframes scanMove{0%{top:0%}100%{top:100%}}
@@ -285,7 +265,7 @@ html,body{
 .interference{
     position:fixed;
     inset:0;
-    z-index:10;
+    z-index:12;
     pointer-events:none;
     display:flex;
     align-items:center;
@@ -293,20 +273,18 @@ html,body{
     opacity:0;
     transition:opacity 0.1s;
 }
-.interference.active{
-    opacity:1;
-}
+.interference.active{opacity:1}
 
 .interference-box{
-    padding:20px 40px;
+    padding:18px 36px;
     background:rgba(10,10,10,0.95);
     border:2px solid var(--kzn-yellow);
-    box-shadow:0 0 40px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.05);
+    box-shadow:0 0 40px rgba(255,215,0,0.3);
 }
 
 .interference-text{
     font-family:'Space Grotesk',sans-serif;
-    font-size:1rem;
+    font-size:0.95rem;
     font-weight:700;
     color:var(--kzn-yellow);
     letter-spacing:0.3em;
@@ -321,58 +299,48 @@ html,body{
     75%{opacity:0.6;transform:translate(-1px,-1px)}
 }
 
-/* === LEFT METERS (BIGGER) === */
+/* === LEFT METER (SINGLE, BIGGER) === */
 .meter-panel{
     position:fixed;
-    left:24px;
+    left:28px;
     top:50%;
     transform:translateY(-50%);
     z-index:20;
     display:flex;
     flex-direction:column;
-    gap:28px;
-}
-
-.meter{
-    display:flex;
-    flex-direction:column;
     align-items:center;
-    gap:8px;
+    gap:10px;
 }
 
 .meter-label{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.65rem;
-    color:var(--ui-dim);
-    letter-spacing:0.15em;
+    font-size:0.7rem;
+    color:rgba(255,215,0,0.5);
+    letter-spacing:0.2em;
     text-transform:uppercase;
 }
 
 .meter-scale{
-    width:40px;
-    height:160px;
-    background:rgba(20,20,20,0.7);
-    border:2px solid rgba(255,215,0,0.25);
-    border-radius:4px;
+    width:48px;
+    height:200px;
+    background:rgba(20,20,20,0.85);
+    border:2px solid rgba(255,215,0,0.3);
+    border-radius:6px;
     position:relative;
     overflow:hidden;
-    box-shadow:inset 0 0 10px rgba(0,0,0,0.5);
+    box-shadow:inset 0 0 15px rgba(0,0,0,0.5), 0 0 20px rgba(255,215,0,0.05);
 }
 
 .meter-bar{
     position:absolute;
     bottom:0;
-    left:4px;
-    right:4px;
-    background:linear-gradient(to top,
-        var(--kzn-yellow),
-        rgba(255,215,0,0.7),
-        rgba(255,100,50,0.8)
-    );
-    border-radius:2px;
-    transition:height 0.15s;
-    min-height:2px;
-    box-shadow:0 0 10px rgba(255,215,0,0.3);
+    left:5px;
+    right:5px;
+    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,100,50,0.8));
+    border-radius:3px;
+    transition:height 0.2s;
+    min-height:3px;
+    box-shadow:0 0 15px rgba(255,215,0,0.4);
 }
 
 .meter-peak{
@@ -381,14 +349,14 @@ html,body{
     right:0;
     height:2px;
     background:rgba(255,100,50,0.9);
-    box-shadow:0 0 6px rgba(255,100,50,0.6);
+    box-shadow:0 0 8px rgba(255,100,50,0.7);
     transition:bottom 0.3s;
 }
 
 /* === RIGHT DIAL (BIGGER) === */
 .dial-panel{
     position:fixed;
-    right:24px;
+    right:28px;
     top:50%;
     transform:translateY(-50%);
     z-index:20;
@@ -399,8 +367,8 @@ html,body{
 }
 
 .dial-circle{
-    width:100px;
-    height:100px;
+    width:110px;
+    height:110px;
     position:relative;
 }
 
@@ -408,10 +376,10 @@ html,body{
     width:100%;
     height:100%;
     border-radius:50%;
-    background:rgba(20,20,20,0.7);
-    border:2px solid rgba(255,215,0,0.3);
+    background:rgba(20,20,20,0.85);
+    border:2px solid rgba(255,215,0,0.35);
     position:relative;
-    box-shadow:0 0 25px rgba(255,215,0,0.15), inset 0 0 15px rgba(0,0,0,0.3);
+    box-shadow:0 0 30px rgba(255,215,0,0.1), inset 0 0 20px rgba(0,0,0,0.3);
 }
 
 .dial-needle{
@@ -419,185 +387,183 @@ html,body{
     top:50%;
     left:50%;
     width:3px;
-    height:42px;
-    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,215,0,0.3));
+    height:46px;
+    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,215,0,0.2));
     transform-origin:bottom center;
     transform:translate(-50%,-100%) rotate(-135deg);
     transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    border-radius:1px;
-    box-shadow:0 0 8px rgba(255,215,0,0.4);
+    border-radius:2px;
+    box-shadow:0 0 10px rgba(255,215,0,0.5);
 }
 
 .dial-center-dot{
     position:absolute;
     top:50%;
     left:50%;
-    width:10px;
-    height:10px;
+    width:12px;
+    height:12px;
     background:var(--kzn-yellow);
     border-radius:50%;
     transform:translate(-50%,-50%);
-    box-shadow:0 0 12px rgba(255,215,0,0.6);
+    box-shadow:0 0 15px rgba(255,215,0,0.6);
 }
 
 .dial-ticks{
     position:absolute;
-    inset:8px;
+    inset:10px;
 }
 
 .dial-tick{
     position:absolute;
     top:0;
     left:50%;
-    width:1.5px;
-    height:6px;
-    background:rgba(255,215,0,0.4);
-    transform-origin:center 40px;
+    width:2px;
+    height:7px;
+    background:rgba(255,215,0,0.45);
+    transform-origin:center 44px;
 }
 
 .dial-value{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.75rem;
-    color:var(--ui-dim);
+    font-size:0.8rem;
+    color:rgba(255,215,0,0.5);
     letter-spacing:0.05em;
 }
-.dial-value.hot{color:var(--kzn-yellow);text-shadow:0 0 10px rgba(255,215,0,0.4)}
+.dial-value.hot{color:var(--kzn-yellow);text-shadow:0 0 12px rgba(255,215,0,0.4)}
 
-/* === OSCILLOSCOPE (BIGGER, PROMINENT) === */
+/* === OSCILLOSCOPE (PROMINENT) === */
 .oscilloscope{
     position:fixed;
-    bottom:120px;
+    bottom:130px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
-    width:280px;
-    height:85px;
-    background:rgba(20,20,20,0.7);
-    border:2px solid rgba(255,215,0,0.2);
-    border-radius:8px;
+    width:300px;
+    height:90px;
+    background:rgba(20,20,20,0.85);
+    border:2px solid rgba(255,215,0,0.25);
+    border-radius:10px;
     overflow:hidden;
-    box-shadow:0 4px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3);
+    box-shadow:0 4px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
 }
 
 .oscilloscope-header{
     position:absolute;
-    top:4px;
-    right:10px;
+    top:5px;
+    right:12px;
     font-family:'Share Tech Mono',monospace;
-    font-size:0.55rem;
-    color:rgba(255,215,0,0.3);
+    font-size:0.6rem;
+    color:rgba(255,215,0,0.35);
     letter-spacing:0.1em;
 }
 
-#oscilloscope-canvas{
-    width:100%;
-    height:100%;
-}
+#oscilloscope-canvas{width:100%;height:100%}
 
-/* === SIMPLIFIED COMPASS (TOP CENTER) === */
-.compass-area{
+/* === SIMPLIFIED NAVIGATION (BIG ARROW) === */
+.nav-hint{
     position:fixed;
-    top:32px;
+    top:90px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
     display:flex;
     align-items:center;
     gap:16px;
-    background:rgba(10,10,10,0.7);
-    padding:12px 28px;
+    background:rgba(10,10,10,0.85);
+    padding:14px 32px;
     border-radius:12px;
     border:2px solid rgba(255,215,0,0.2);
     backdrop-filter:blur(10px);
-    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    box-shadow:0 4px 25px rgba(0,0,0,0.4);
+    transition:all 0.3s;
+}
+.nav-hint.hot{
+    border-color:rgba(255,215,0,0.6);
+    box-shadow:0 4px 30px rgba(255,215,0,0.2);
 }
 
-.compass-icon{
-    width:48px;
-    height:48px;
-    position:relative;
+.nav-arrow{
+    width:0;
+    height:0;
+    border-left:10px solid transparent;
+    border-right:10px solid transparent;
+    border-bottom:16px solid rgba(255,215,0,0.4);
+    transition:all 0.3s;
+    animation:arrowBounce 1.5s infinite;
 }
-
-.compass-ring{
-    position:absolute;
-    inset:0;
-    border:2px solid rgba(255,215,0,0.35);
-    border-radius:50%;
-}
-
-.compass-arrow{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:2.5px;
-    height:20px;
-    background:var(--ui-dim);
-    transform-origin:bottom center;
-    transform:translate(-50%,-100%) rotate(0deg);
-    transition:all .3s;
-}
-.compass-arrow.hot{
-    background:var(--kzn-yellow);
-    box-shadow:0 0 10px rgba(255,215,0,0.6);
-}
-
-.compass-arrow::after{
-    content:'';
-    position:absolute;
-    top:-6px;
-    left:50%;
-    transform:translateX(-50%);
-    border-left:5px solid transparent;
-    border-right:5px solid transparent;
-    border-bottom:8px solid var(--ui-dim);
-}
-.compass-arrow.hot::after{
+.nav-arrow.hot{
     border-bottom-color:var(--kzn-yellow);
+    filter:drop-shadow(0 0 8px rgba(255,215,0,0.6));
+}
+@keyframes arrowBounce{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-6px)}
 }
 
-.compass-info{
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.8rem;
-    color:var(--ui-dim);
+.nav-text{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.95rem;
+    font-weight:600;
+    color:rgba(255,215,0,0.6);
     letter-spacing:0.05em;
-    line-height:1.5;
+    text-align:center;
 }
-.compass-info.hot{color:var(--kzn-yellow)}
+.nav-text.hot{color:var(--kzn-yellow)}
 
-/* === STATUS PANEL (TOP LEFT) === */
-.status-panel{
+/* === STATUS (SIMPLIFIED) === */
+.status-simple{
     position:fixed;
-    top:36px;
-    left:36px;
+    top:90px;
+    left:28px;
     z-index:20;
     font-family:'Share Tech Mono',monospace;
-    font-size:0.7rem;
-    color:var(--ui-dim);
+    font-size:0.75rem;
+    color:rgba(255,215,0,0.5);
     letter-spacing:0.1em;
-    line-height:1.8;
+    line-height:1.6;
+    background:rgba(10,10,10,0.7);
+    padding:10px 16px;
+    border-radius:8px;
+    border:1px solid rgba(255,215,0,0.15);
 }
 
-.status-row{
-    display:flex;
-    gap:12px;
-}
-
-.status-key{
-    color:rgba(255,215,0,0.35);
-    min-width:70px;
-}
-
-.status-val{
-    color:var(--kzn-yellow-dim);
-    font-weight:600;
-}
-.status-val.hot{color:var(--kzn-yellow);text-shadow:0 0 8px rgba(255,215,0,0.3)}
-.status-val.locking{color:var(--signal-cyan);text-shadow:0 0 8px rgba(0,227,253,0.3)}
-
-.status-blink{
-    animation:blink 1s infinite;
-}
+.status-simple .hot{color:var(--kzn-yellow);text-shadow:0 0 8px rgba(255,215,0,0.3)}
+.status-blink{animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* === LOCK BUTTON === */
+.lock-btn{
+    position:fixed;
+    bottom:45px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    padding:18px 56px;
+    background:rgba(255,215,0,0.1);
+    color:var(--kzn-yellow);
+    border:2px solid var(--kzn-yellow);
+    border-radius:0;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.95rem;
+    font-weight:700;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transition:all .4s;
+    backdrop-filter:blur(10px);
+    z-index:20;
+}
+.lock-btn.visible{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateX(-50%) translateY(0);
+}
+.lock-btn:hover{
+    background:var(--kzn-yellow);
+    color:var(--kzn-black);
+    box-shadow:0 0 50px rgba(255,215,0,0.5);
+}
 
 /* === START SCREEN === */
 #start-screen{
@@ -609,7 +575,7 @@ html,body{
     justify-content:center;
     z-index:30;
     transition:opacity 1s;
-    background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,215,0,0.08), transparent 70%);
+    background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,215,0,0.06), transparent 70%);
 }
 #start-screen.hidden{
     opacity:0;
@@ -665,12 +631,8 @@ html,body{
     transition:transform 0.3s;
     z-index:-1;
 }
-.start-btn:hover{
-    color:var(--kzn-black);
-}
-.start-btn:hover::before{
-    transform:translateX(0);
-}
+.start-btn:hover{color:var(--kzn-black)}
+.start-btn:hover::before{transform:translateX(0)}
 
 .start-hint{
     margin-top:36px;
@@ -680,40 +642,6 @@ html,body{
     letter-spacing:0.1em;
     text-align:center;
     line-height:1.8;
-}
-
-/* === LOCK BUTTON === */
-.lock-btn{
-    position:fixed;
-    bottom:48px;
-    left:50%;
-    transform:translateX(-50%) translateY(20px);
-    padding:18px 56px;
-    background:rgba(255,215,0,0.1);
-    color:var(--kzn-yellow);
-    border:2px solid var(--kzn-yellow);
-    border-radius:0;
-    font-family:'Space Grotesk',sans-serif;
-    font-size:0.9rem;
-    font-weight:700;
-    letter-spacing:0.15em;
-    text-transform:uppercase;
-    cursor:pointer;
-    opacity:0;
-    pointer-events:none;
-    transition:all .4s;
-    backdrop-filter:blur(10px);
-    z-index:20;
-}
-.lock-btn.visible{
-    opacity:1;
-    pointer-events:auto;
-    transform:translateX(-50%) translateY(0);
-}
-.lock-btn:hover{
-    background:var(--kzn-yellow);
-    color:var(--kzn-black);
-    box-shadow:0 0 50px rgba(255,215,0,0.5);
 }
 
 /* === STAGE 2: FORM === */
@@ -807,9 +735,7 @@ html,body{
     box-shadow:0 0 0 2px rgba(255,215,0,0.1), 0 0 20px rgba(255,215,0,0.1);
 }
 
-.form-group input::placeholder{
-    color:rgba(255,215,0,0.2);
-}
+.form-group input::placeholder{color:rgba(255,215,0,0.2)}
 
 .submit-btn{
     width:100%;
@@ -834,10 +760,10 @@ html,body{
     transform:translateY(-1px);
 }
 
-/* === BOTTOM MANIFESTO === */
+/* === FOOTER MANIFESTO === */
 .bottom-manifesto{
     position:fixed;
-    bottom:20px;
+    bottom:16px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
@@ -850,7 +776,6 @@ html,body{
     pointer-events:none;
 }
 
-/* === DEBUG === */
 #dbg{
     position:fixed;
     bottom:8px;
@@ -864,17 +789,22 @@ html,body{
 </head>
 <body>
 
-<div class="pattern-bg"></div>
+<div class="dark-base"></div>
 <canvas id="static-canvas"></canvas>
 <div class="scanlines"></div>
-<div class="crt-overlay"></div>
+<div class="vignette"></div>
 
-<div class="deco-frame top-left"></div>
-<div class="deco-frame top-right"></div>
-<div class="deco-frame bottom-left"></div>
-<div class="deco-frame bottom-right"></div>
+<div class="frame-corner frame-tl"></div>
+<div class="frame-corner frame-tr"></div>
+<div class="frame-corner frame-bl"></div>
+<div class="frame-corner frame-br"></div>
 
-<div class="sooon-watermark">SOOON</div>
+<div class="top-bar">
+    <span class="top-bar-title">SOOON</span>
+    <span class="top-bar-sub">SIGNAL HUNT v1.0</span>
+</div>
+
+<div class="hero-title" id="heroTitle">SOOON</div>
 
 <div class="signal-burst" id="signalBurst"></div>
 <div class="scan-bar" id="scanBar"></div>
@@ -895,18 +825,10 @@ html,body{
 </div>
 
 <div class="meter-panel" id="meterPanel">
-    <div class="meter">
-        <div class="meter-label">SIG</div>
-        <div class="meter-scale">
-            <div class="meter-bar" id="meterSignal" style="height:5%"></div>
-            <div class="meter-peak" id="meterPeak" style="bottom:5%"></div>
-        </div>
-    </div>
-    <div class="meter">
-        <div class="meter-label">NOISE</div>
-        <div class="meter-scale">
-            <div class="meter-bar" id="meterNoise" style="height:85%;background:rgba(255,215,0,0.15)"></div>
-        </div>
+    <div class="meter-label">SIGNAL</div>
+    <div class="meter-scale">
+        <div class="meter-bar" id="meterSignal" style="height:5%"></div>
+        <div class="meter-peak" id="meterPeak" style="bottom:5%"></div>
     </div>
 </div>
 
@@ -927,34 +849,14 @@ html,body{
     <canvas id="oscilloscope-canvas"></canvas>
 </div>
 
-<div class="compass-area" id="compassArea" style="opacity:0;transition:opacity 0.5s">
-    <div class="compass-icon">
-        <div class="compass-ring"></div>
-        <div class="compass-arrow" id="compassArrow"></div>
-    </div>
-    <div class="compass-info" id="compassInfo">
-        <div id="compassReadout">000°</div>
-        <div style="font-size:0.65rem;opacity:0.6;margin-top:2px">К ЛУНЕ →</div>
-    </div>
+<div class="nav-hint" id="navHint" style="opacity:0;transition:opacity 0.5s">
+    <div class="nav-arrow" id="navArrow"></div>
+    <div class="nav-text" id="navText">Поверни на ЮГ</div>
 </div>
 
-<div class="status-panel" id="statusPanel" style="opacity:0;transition:opacity 0.5s">
-    <div class="status-row">
-        <span class="status-key">STATUS</span>
-        <span class="status-val status-blink" id="statusValue">SCANNING</span>
-    </div>
-    <div class="status-row">
-        <span class="status-key">AZIMUTH</span>
-        <span class="status-val" id="statusAlpha">---</span>
-    </div>
-    <div class="status-row">
-        <span class="status-key">ELEV</span>
-        <span class="status-val" id="statusBeta">---</span>
-    </div>
-    <div class="status-row">
-        <span class="status-key">SIGNAL</span>
-        <span class="status-val" id="statusSignal">0%</span>
-    </div>
+<div class="status-simple" id="statusPanel" style="opacity:0;transition:opacity 0.5s">
+    <div>STATUS: <span class="status-blink" id="statusValue">SCANNING</span></div>
+    <div>SIGNAL: <span id="statusSignal">0%</span></div>
 </div>
 
 <button class="lock-btn" id="lockBtn">ФИКСИРОВАТЬ</button>
@@ -999,413 +901,261 @@ html,body{
 <div id="dbg"></div>
 
 <script>
-// === TV STATIC (SOFTER) ===
+// === STATIC (SUBTLE) ===
 const staticCanvas = document.getElementById('static-canvas');
 const staticCtx = staticCanvas.getContext('2d');
-
-function resizeStatic(){
-    staticCanvas.width = window.innerWidth;
-    staticCanvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeStatic);
-resizeStatic();
-
-let staticIntensity = 1.0;
+function resizeStatic(){staticCanvas.width=window.innerWidth;staticCanvas.height=window.innerHeight}
+window.addEventListener('resize', resizeStatic);resizeStatic();
+let staticIntensity=1.0;
 
 function drawStatic(){
-    const w = staticCanvas.width;
-    const h = staticCanvas.height;
-    const idata = staticCtx.createImageData(w, h);
-    const buffer = new Uint32Array(idata.data.buffer);
-    
-    for(let i = 0; i < buffer.length; i++){
-        const noise = Math.random();
-        const x = (i % w) / w;
-        const y = Math.floor(i / w) / h;
-        const distFromCenter = Math.sqrt((x-0.5)**2 + (y-0.5)**2);
-        
-        let portalFactor = 1;
-        if(distFromCenter < 0.25){
-            portalFactor = staticIntensity;
-        }
-        
-        const v = Math.floor(noise * 200 * portalFactor);
-        const yellowTint = Math.floor(v * 0.85);
-        buffer[i] = (255 << 24) | (yellowTint << 16) | (yellowTint << 8) | v;
+    const w=staticCanvas.width,h=staticCanvas.height;
+    const idata=staticCtx.createImageData(w,h);
+    const buffer=new Uint32Array(idata.data.buffer);
+    for(let i=0;i<buffer.length;i++){
+        const noise=Math.random();
+        const x=(i%w)/w,y=Math.floor(i/w)/h;
+        const distFromCenter=Math.sqrt((x-0.5)**2+(y-0.5)**2);
+        let portalFactor=1;
+        if(distFromCenter<0.25)portalFactor=staticIntensity;
+        const v=Math.floor(noise*180*portalFactor);
+        const yellowTint=Math.floor(v*0.9);
+        buffer[i]=(255<<24)|(yellowTint<<16)|(yellowTint<<8)|v;
     }
-    
-    staticCtx.putImageData(idata, 0, 0);
+    staticCtx.putImageData(idata,0,0);
     requestAnimationFrame(drawStatic);
 }
 drawStatic();
 
 // === DIAL TICKS ===
-const dialTicks = document.getElementById('dialTicks');
-for(let i = 0; i < 12; i++){
-    const tick = document.createElement('div');
-    tick.className = 'dial-tick';
-    tick.style.transform = `translateX(-50%) rotate(${i * 30}deg)`;
+const dialTicks=document.getElementById('dialTicks');
+for(let i=0;i<12;i++){
+    const tick=document.createElement('div');
+    tick.className='dial-tick';
+    tick.style.transform=`translateX(-50%) rotate(${i*30}deg)`;
     dialTicks.appendChild(tick);
 }
 
 // === OSCILLOSCOPE ===
-const oscCanvas = document.getElementById('oscilloscope-canvas');
-const oscCtx = oscCanvas.getContext('2d');
-
-function resizeOsc(){
-    const rect = oscCanvas.parentElement.getBoundingClientRect();
-    oscCanvas.width = rect.width;
-    oscCanvas.height = rect.height;
-}
+const oscCanvas=document.getElementById('oscilloscope-canvas');
+const oscCtx=oscCanvas.getContext('2d');
+function resizeOsc(){const rect=oscCanvas.parentElement.getBoundingClientRect();oscCanvas.width=rect.width;oscCanvas.height=rect.height}
 resizeOsc();
 
-let signalStrength = 0;
-let targetSignalStrength = 0;
+let signalStrength=0,targetSignalStrength=0;
 
 function drawOscilloscope(){
-    const w = oscCanvas.width;
-    const h = oscCanvas.height;
-    
-    oscCtx.fillStyle = 'rgba(20,20,20,0.15)';
-    oscCtx.fillRect(0, 0, w, h);
-    
-    const time = Date.now() / 1000;
-    const amplitude = signalStrength / 100;
-    const noise = (1 - amplitude);
-    
-    // Grid
-    oscCtx.strokeStyle = 'rgba(255,215,0,0.06)';
-    oscCtx.lineWidth = 0.5;
-    for(let x = 0; x < w; x += 20){
-        oscCtx.beginPath();
-        oscCtx.moveTo(x, 0);
-        oscCtx.lineTo(x, h);
-        oscCtx.stroke();
-    }
-    for(let y = 0; y < h; y += 15){
-        oscCtx.beginPath();
-        oscCtx.moveTo(0, y);
-        oscCtx.lineTo(w, y);
-        oscCtx.stroke();
-    }
-    
-    // Wave
-    oscCtx.strokeStyle = signalStrength > 80 ? 'rgba(255,215,0,0.9)' : 
-                         signalStrength > 50 ? 'rgba(255,215,0,0.6)' : 'rgba(255,215,0,0.25)';
-    oscCtx.lineWidth = 2;
-    oscCtx.shadowBlur = signalStrength > 80 ? 15 : 0;
-    oscCtx.shadowColor = 'rgba(255,215,0,0.6)';
+    const w=oscCanvas.width,h=oscCanvas.height;
+    oscCtx.fillStyle='rgba(20,20,20,0.12)';oscCtx.fillRect(0,0,w,h);
+    const time=Date.now()/1000;
+    const amplitude=signalStrength/100,noise=(1-amplitude);
+    oscCtx.strokeStyle='rgba(255,215,0,0.06)';oscCtx.lineWidth=0.5;
+    for(let x=0;x<w;x+=20){oscCtx.beginPath();oscCtx.moveTo(x,0);oscCtx.lineTo(x,h);oscCtx.stroke()}
+    for(let y=0;y<h;y+=15){oscCtx.beginPath();oscCtx.moveTo(0,y);oscCtx.lineTo(w,y);oscCtx.stroke()}
+    oscCtx.strokeStyle=signalStrength>80?'rgba(255,215,0,0.95)':signalStrength>50?'rgba(255,215,0,0.6)':'rgba(255,215,0,0.25)';
+    oscCtx.lineWidth=2.5;
+    oscCtx.shadowBlur=signalStrength>80?20:0;
+    oscCtx.shadowColor='rgba(255,215,0,0.6)';
     oscCtx.beginPath();
-    
-    for(let x = 0; x < w; x++){
-        const normalizedX = x / w;
-        const wave1 = Math.sin(normalizedX * 15 + time * 8) * amplitude * h * 0.35;
-        const wave2 = Math.sin(normalizedX * 8 + time * 3) * amplitude * h * 0.15;
-        const staticNoise = (Math.random() - 0.5) * noise * h * 0.5;
-        const burst = signalStrength > 70 && Math.sin(time * 10) > 0.8 ? 
-                      Math.sin(normalizedX * 20 + time * 15) * h * 0.2 : 0;
-        
-        const y = h / 2 + wave1 + wave2 + staticNoise + burst;
-        
-        if(x === 0) oscCtx.moveTo(x, y);
-        else oscCtx.lineTo(x, y);
+    for(let x=0;x<w;x++){
+        const nx=x/w;
+        const wave1=Math.sin(nx*15+time*8)*amplitude*h*0.35;
+        const wave2=Math.sin(nx*8+time*3)*amplitude*h*0.15;
+        const staticNoise=(Math.random()-0.5)*noise*h*0.5;
+        const burst=signalStrength>70&&Math.sin(time*10)>0.8?Math.sin(nx*20+time*15)*h*0.2:0;
+        const y=h/2+wave1+wave2+staticNoise+burst;
+        if(x===0)oscCtx.moveTo(x,y);else oscCtx.lineTo(x,y);
     }
-    
-    oscCtx.stroke();
-    oscCtx.shadowBlur = 0;
+    oscCtx.stroke();oscCtx.shadowBlur=0;
     requestAnimationFrame(drawOscilloscope);
 }
 drawOscilloscope();
 
 // === GAME STATE ===
-let signalLocked = false;
-let gameActive = false;
+let signalLocked=false,gameActive=false;
 
-// HIGHER zone (toward sky/stars) and WIDER tolerance
-const TARGET_ALPHA = 180;  // South
-const TARGET_BETA = 100;   // Higher elevation (phone more upward toward sky)
-const ALPHA_TOLERANCE = 60;  // Wider horizontal zone
-const BETA_TOLERANCE = 40;   // Wider vertical zone
+// HIGHER zone + WIDER tolerance
+const TARGET_ALPHA=180;
+const TARGET_BETA=110;
+const ALPHA_TOLERANCE=70;
+const BETA_TOLERANCE=50;
 
-let currentAlpha = 0;
-let currentBeta = 0;
-let inHotZone = false;
-let hotZoneTimer = null;
+let currentAlpha=0,currentBeta=0,inHotZone=false,hotZoneTimer=null;
 
-const interferenceMessages = [
-    "СИГНАЛ ОБНАРУЖЕН",
-    "ЧАСТОТА БЛИЗКО",
-    "ПРИБЛИЖАЕМСЯ",
-    "КРИСТАЛЛ РЯДОМ",
-    "ВИБРАЦИЯ УСИЛЕНА",
-    "ПОРТАЛ ОТКРЫВАЕТСЯ",
-    "ДРУГАЯ РЕАЛЬНОСТЬ",
-    "СКАНИРОВАНИЕ...",
-    "HAVE A NICE TRIP"
-];
+const navTexts=["Поверни на ЮГ","Подними к небу","К ЛУНЕ","Теплее...","Горячо!","Почти..."];
 
-const startScreen = document.getElementById('start-screen');
-const startBtn = document.getElementById('startBtn');
-const signalPortal = document.getElementById('signalPortal');
-const portalVideo = document.getElementById('portal-video');
-const portalPlaceholder = document.getElementById('portalPlaceholder');
-const lockBtn = document.getElementById('lockBtn');
-const statusPanel = document.getElementById('statusPanel');
-const statusValue = document.getElementById('statusValue');
-const statusAlpha = document.getElementById('statusAlpha');
-const statusBeta = document.getElementById('statusBeta');
-const statusSignal = document.getElementById('statusSignal');
-const meterSignal = document.getElementById('meterSignal');
-const meterPeak = document.getElementById('meterPeak');
-const dialNeedle = document.getElementById('dialNeedle');
-const dialValue = document.getElementById('dialValue');
-const compassArrow = document.getElementById('compassArrow');
-const compassReadout = document.getElementById('compassReadout');
-const compassInfo = document.getElementById('compassInfo');
-const compassArea = document.getElementById('compassArea');
-const signalBurst = document.getElementById('signalBurst');
-const interference = document.getElementById('interference');
-const interferenceText = document.getElementById('interferenceText');
-const scanBar = document.getElementById('scanBar');
-const meterPanel = document.getElementById('meterPanel');
-const dialPanel = document.getElementById('dialPanel');
-const oscilloscope = document.getElementById('oscilloscope');
-const dbg = document.getElementById('dbg');
+const interferenceMessages=["СИГНАЛ ОБНАРУЖЕН","ЧАСТОТА БЛИЗКО","КРИСТАЛЛ РЯДОМ","ПОРТАЛ ОТКРЫВАЕТСЯ","ДРУГАЯ РЕАЛЬНОСТЬ","HAVE A NICE TRIP"];
+
+const startScreen=document.getElementById('start-screen');
+const startBtn=document.getElementById('startBtn');
+const signalPortal=document.getElementById('signalPortal');
+const portalVideo=document.getElementById('portal-video');
+const portalPlaceholder=document.getElementById('portalPlaceholder');
+const lockBtn=document.getElementById('lockBtn');
+const statusPanel=document.getElementById('statusPanel');
+const statusValue=document.getElementById('statusValue');
+const statusSignal=document.getElementById('statusSignal');
+const meterSignal=document.getElementById('meterSignal');
+const meterPeak=document.getElementById('meterPeak');
+const dialNeedle=document.getElementById('dialNeedle');
+const dialValue=document.getElementById('dialValue');
+const navHint=document.getElementById('navHint');
+const navArrow=document.getElementById('navArrow');
+const navText=document.getElementById('navText');
+const signalBurst=document.getElementById('signalBurst');
+const interference=document.getElementById('interference');
+const interferenceText=document.getElementById('interferenceText');
+const scanBar=document.getElementById('scanBar');
+const dbg=document.getElementById('dbg');
 
 function updateSignalStrength(){
-    let alphaDiff = Math.abs(currentAlpha - TARGET_ALPHA);
-    if(alphaDiff > 180) alphaDiff = 360 - alphaDiff;
-    
-    const betaDiff = Math.abs(currentBeta - TARGET_BETA);
-    
-    const alphaProximity = Math.max(0, 1 - alphaDiff / ALPHA_TOLERANCE);
-    const betaProximity = Math.max(0, 1 - betaDiff / BETA_TOLERANCE);
-    
-    targetSignalStrength = Math.min(alphaProximity, betaProximity) * 100;
-    signalStrength += (targetSignalStrength - signalStrength) * 0.1;
-    staticIntensity = 1 - (signalStrength / 100) * 0.7;
-    
+    let alphaDiff=Math.abs(currentAlpha-TARGET_ALPHA);
+    if(alphaDiff>180)alphaDiff=360-alphaDiff;
+    const betaDiff=Math.abs(currentBeta-TARGET_BETA);
+    const alphaProximity=Math.max(0,1-alphaDiff/ALPHA_TOLERANCE);
+    const betaProximity=Math.max(0,1-betaDiff/BETA_TOLERANCE);
+    targetSignalStrength=Math.min(alphaProximity,betaProximity)*100;
+    signalStrength+=(targetSignalStrength-signalStrength)*0.1;
+    staticIntensity=1-(signalStrength/100)*0.7;
     updateUI();
-    
-    if(signalStrength > 30 && signalStrength < 80 && Math.random() < 0.02){
-        showSignalBurst();
-    }
-    
-    if(signalStrength < 40 && Math.random() < 0.025){
-        showInterference();
-    }
+    if(signalStrength>30&&signalStrength<80&&Math.random()<0.02)showSignalBurst();
+    if(signalStrength<40&&Math.random()<0.025)showInterference();
 }
 
 function updateUI(){
-    statusAlpha.innerText = Math.round(currentAlpha) + '°';
-    statusBeta.innerText = Math.round(currentBeta) + '°';
-    statusSignal.innerText = Math.round(signalStrength) + '%';
-    
-    compassArrow.style.transform = `translate(-50%,-100%) rotate(${currentAlpha}deg)`;
-    compassReadout.innerText = Math.round(currentAlpha).toString().padStart(3, '0') + '°';
-    
-    const dialRotation = (signalStrength / 100) * 270 - 135;
-    dialNeedle.style.transform = `translate(-50%,-100%) rotate(${dialRotation}deg)`;
-    dialValue.innerText = (87.5 + signalStrength * 0.15).toFixed(1) + ' MHz';
-    
-    meterSignal.style.height = signalStrength + '%';
-    if(signalStrength > parseFloat(meterPeak.style.bottom)){
-        meterPeak.style.bottom = signalStrength + '%';
+    statusSignal.innerText=Math.round(signalStrength)+'%';
+    const dialRotation=(signalStrength/100)*270-135;
+    dialNeedle.style.transform=`translate(-50%,-100%) rotate(${dialRotation}deg)`;
+    dialValue.innerText=(87.5+signalStrength*0.15).toFixed(1)+' MHz';
+    meterSignal.style.height=signalStrength+'%';
+    if(signalStrength>parseFloat(meterPeak.style.bottom))meterPeak.style.bottom=signalStrength+'%';
+    setTimeout(()=>{meterPeak.style.bottom=Math.max(5,signalStrength)+'%'},300);
+
+    // Simplified navigation hint
+    if(signalStrength<20){
+        navText.innerText="Поверни на ЮГ";
+        navArrow.style.transform='rotate(180deg)';
+    }else if(signalStrength<40){
+        navText.innerText="Подними к небу";
+        navArrow.style.transform='rotate(0deg)';
+    }else if(signalStrength<60){
+        navText.innerText="К ЛУНЕ →";
+    }else if(signalStrength<80){
+        navText.innerText="Теплее...";
+    }else{
+        navText.innerText="Горячо!";
     }
-    setTimeout(() => {
-        meterPeak.style.bottom = Math.max(5, signalStrength) + '%';
-    }, 300);
-    
-    if(signalStrength > 90){
-        statusValue.innerText = 'LOCKING';
-        statusValue.className = 'status-val locking';
-        signalPortal.className = 'signal-portal active locking';
-        portalVideo.classList.add('active');
-        portalPlaceholder.classList.add('hidden');
-        dialValue.classList.add('hot');
-        compassArrow.classList.add('hot');
-        compassInfo.classList.add('hot');
-        
-        if(Math.random() < 0.05){
-            portalVideo.classList.add('glitching');
-            setTimeout(() => portalVideo.classList.remove('glitching'), 150);
+
+    if(signalStrength>90){
+        statusValue.innerText='LOCKING';statusValue.className='hot';
+        signalPortal.className='signal-portal active locking';
+        portalVideo.classList.add('active');portalPlaceholder.classList.add('hidden');
+        dialValue.classList.add('hot');navHint.classList.add('hot');
+        navArrow.classList.add('hot');navText.classList.add('hot');
+        if(Math.random()<0.05){portalVideo.classList.add('glitching');setTimeout(()=>portalVideo.classList.remove('glitching'),150)}
+        if(!inHotZone&&!signalLocked){
+            inHotZone=true;lockBtn.classList.add('visible');
+            hotZoneTimer=setTimeout(()=>{if(!signalLocked)lockSignal()},3000);
         }
-        
-        if(!inHotZone && !signalLocked){
-            inHotZone = true;
-            lockBtn.classList.add('visible');
-            hotZoneTimer = setTimeout(() => {
-                if(!signalLocked) lockSignal();
-            }, 3000);
-        }
-    } else if(signalStrength > 50){
-        statusValue.innerText = 'NEAR';
-        statusValue.className = 'status-val hot';
-        signalPortal.className = 'signal-portal active';
-        portalVideo.classList.remove('active');
-        portalPlaceholder.classList.remove('hidden');
-        dialValue.classList.remove('hot');
-        compassArrow.classList.remove('hot');
-        compassInfo.classList.remove('hot');
-        
-        if(Math.random() < 0.03){
-            portalVideo.classList.add('active');
-            setTimeout(() => portalVideo.classList.remove('active'), 100);
-        }
-        
-        inHotZone = false;
-        lockBtn.classList.remove('visible');
-        clearTimeout(hotZoneTimer);
-    } else {
-        statusValue.innerText = 'SCANNING';
-        statusValue.className = 'status-val status-blink';
-        signalPortal.className = 'signal-portal';
-        portalVideo.classList.remove('active');
-        portalPlaceholder.classList.remove('hidden');
-        dialValue.classList.remove('hot');
-        compassArrow.classList.remove('hot');
-        compassInfo.classList.remove('hot');
-        
-        inHotZone = false;
-        lockBtn.classList.remove('visible');
-        clearTimeout(hotZoneTimer);
+    }else if(signalStrength>50){
+        statusValue.innerText='NEAR';statusValue.className='hot';
+        signalPortal.className='signal-portal active';
+        portalVideo.classList.remove('active');portalPlaceholder.classList.remove('hidden');
+        dialValue.classList.remove('hot');navHint.classList.remove('hot');
+        navArrow.classList.remove('hot');navText.classList.remove('hot');
+        if(Math.random()<0.03){portalVideo.classList.add('active');setTimeout(()=>portalVideo.classList.remove('active'),100)}
+        inHotZone=false;lockBtn.classList.remove('visible');clearTimeout(hotZoneTimer);
+    }else{
+        statusValue.innerText='SCANNING';statusValue.className='status-blink';
+        signalPortal.className='signal-portal';
+        portalVideo.classList.remove('active');portalPlaceholder.classList.remove('hidden');
+        dialValue.classList.remove('hot');navHint.classList.remove('hot');
+        navArrow.classList.remove('hot');navText.classList.remove('hot');
+        inHotZone=false;lockBtn.classList.remove('visible');clearTimeout(hotZoneTimer);
     }
 }
 
 function showSignalBurst(){
-    signalBurst.classList.add('active');
-    staticIntensity = 0.2;
-    
-    setTimeout(() => {
-        signalBurst.classList.remove('active');
-        staticIntensity = 1 - (signalStrength / 100) * 0.7;
-    }, 80 + Math.random() * 120);
+    signalBurst.classList.add('active');staticIntensity=0.2;
+    setTimeout(()=>{signalBurst.classList.remove('active');staticIntensity=1-(signalStrength/100)*0.7},80+Math.random()*120);
 }
 
 function showInterference(){
-    const msg = interferenceMessages[Math.floor(Math.random() * interferenceMessages.length)];
-    interferenceText.innerText = msg;
-    interference.classList.add('active');
-    scanBar.classList.add('active');
-    
-    setTimeout(() => {
-        interference.classList.remove('active');
-        scanBar.classList.remove('active');
-    }, 150 + Math.random() * 200);
+    interferenceText.innerText=interferenceMessages[Math.floor(Math.random()*interferenceMessages.length)];
+    interference.classList.add('active');scanBar.classList.add('active');
+    setTimeout(()=>{interference.classList.remove('active');scanBar.classList.remove('active')},150+Math.random()*200);
 }
 
 function lockSignal(){
-    if(signalLocked) return;
-    signalLocked = true;
-    clearTimeout(hotZoneTimer);
-    
-    statusValue.innerText = 'LOCKED';
-    signalPortal.className = 'signal-portal active locking';
-    portalVideo.classList.add('active');
-    portalPlaceholder.classList.add('hidden');
-    staticIntensity = 0.1;
-    
+    if(signalLocked)return;signalLocked=true;clearTimeout(hotZoneTimer);
+    statusValue.innerText='LOCKED';
+    signalPortal.className='signal-portal active locking';
+    portalVideo.classList.add('active');portalPlaceholder.classList.add('hidden');staticIntensity=0.1;
     portalVideo.classList.add('glitching');
-    setTimeout(() => portalVideo.classList.remove('glitching'), 800);
-    
-    if(navigator.vibrate) navigator.vibrate([100,50,100,50,200,100,300]);
-    
-    setTimeout(() => {
-        startScreen.classList.add('hidden');
-        document.getElementById('stage2').classList.add('active');
-    }, 2000);
+    setTimeout(()=>portalVideo.classList.remove('glitching'),800);
+    if(navigator.vibrate)navigator.vibrate([100,50,100,50,200,100,300]);
+    setTimeout(()=>{startScreen.classList.add('hidden');document.getElementById('stage2').classList.add('active')},2000);
 }
 
-lockBtn.addEventListener('click', lockSignal);
+lockBtn.addEventListener('click',lockSignal);
 
 // === START ===
-startBtn.addEventListener('click', () => {
-    startScreen.classList.add('hidden');
-    gameActive = true;
-    statusPanel.style.opacity = '1';
-    compassArea.style.opacity = '1';
-    meterPanel.style.opacity = '1';
-    dialPanel.style.opacity = '1';
-    oscilloscope.style.opacity = '1';
-    
-    if(typeof DeviceOrientationEvent !== 'undefined'){
-        if(typeof DeviceOrientationEvent.requestPermission === 'function'){
-            DeviceOrientationEvent.requestPermission().then(response => {
-                if(response === 'granted'){
-                    window.addEventListener('deviceorientation', handleOrientation);
-                }
-            }).catch(() => {});
-        } else {
-            window.addEventListener('deviceorientation', handleOrientation);
-        }
+startBtn.addEventListener('click',()=>{
+    startScreen.classList.add('hidden');gameActive=true;
+    statusPanel.style.opacity='1';navHint.style.opacity='1';
+    document.getElementById('meterPanel').style.opacity='1';
+    document.getElementById('dialPanel').style.opacity='1';
+    document.getElementById('oscilloscope').style.opacity='1';
+    document.getElementById('heroTitle').style.opacity='0';
+    if(typeof DeviceOrientationEvent!=='undefined'){
+        if(typeof DeviceOrientationEvent.requestPermission==='function'){
+            DeviceOrientationEvent.requestPermission().then(r=>{if(r==='granted')window.addEventListener('deviceorientation',handleOrientation)}).catch(()=>{});
+        }else{window.addEventListener('deviceorientation',handleOrientation)}
     }
-    
     simulateScanning();
 });
 
 function handleOrientation(e){
-    if(e.alpha !== null) currentAlpha = e.alpha;
-    // Phone UP toward sky = high beta
-    if(e.beta !== null) currentBeta = Math.max(0, 180 - Math.abs(e.beta));
-    if(e.gamma !== null) currentBeta = Math.max(currentBeta, Math.abs(e.gamma));
-    
-    if(gameActive) updateSignalStrength();
-    
-    dbg.innerHTML = `α:${Math.round(currentAlpha)}° β:${Math.round(currentBeta)}°<br>sig:${Math.round(signalStrength)}%`;
+    if(e.alpha!==null)currentAlpha=e.alpha;
+    if(e.beta!==null)currentBeta=Math.max(0,180-Math.abs(e.beta));
+    if(e.gamma!==null)currentBeta=Math.max(currentBeta,Math.abs(e.gamma));
+    if(gameActive)updateSignalStrength();
+    dbg.innerHTML=`α:${Math.round(currentAlpha)}° β:${Math.round(currentBeta)}°<br>sig:${Math.round(signalStrength)}%`;
 }
 
 function simulateScanning(){
-    if(typeof DeviceOrientationEvent === 'undefined'){
-        let simulatedAlpha = 0;
-        let simulatedBeta = 30;
-        
-        window.addEventListener('touchmove', (e) => {
-            const x = e.touches[0].clientX / window.innerWidth;
-            const y = e.touches[0].clientY / window.innerHeight;
-            
-            simulatedAlpha = x * 360;
-            simulatedBeta = 30 + (1 - y) * 120;
-            
-            currentAlpha = simulatedAlpha;
-            currentBeta = simulatedBeta;
-            updateSignalStrength();
-        }, {passive:true});
-        
-        let scanDirection = 1;
-        setInterval(() => {
-            if(!gameActive || signalLocked) return;
-            
-            simulatedAlpha += 2 * scanDirection;
-            if(simulatedAlpha > 360) simulatedAlpha = 0;
-            
-            simulatedBeta = 50 + Math.sin(Date.now() / 1000) * 40;
-            
-            currentAlpha = simulatedAlpha;
-            currentBeta = simulatedBeta;
-            updateSignalStrength();
-        }, 50);
+    if(typeof DeviceOrientationEvent==='undefined'){
+        let simulatedAlpha=0,simulatedBeta=30;
+        window.addEventListener('touchmove',(e)=>{
+            const x=e.touches[0].clientX/window.innerWidth;
+            const y=e.touches[0].clientY/window.innerHeight;
+            simulatedAlpha=x*360;simulatedBeta=30+(1-y)*120;
+            currentAlpha=simulatedAlpha;currentBeta=simulatedBeta;updateSignalStrength();
+        },{passive:true});
+        setInterval(()=>{
+            if(!gameActive||signalLocked)return;
+            simulatedAlpha+=2;if(simulatedAlpha>360)simulatedAlpha=0;
+            simulatedBeta=50+Math.sin(Date.now()/1000)*40;
+            currentAlpha=simulatedAlpha;currentBeta=simulatedBeta;updateSignalStrength();
+        },50);
     }
 }
 
 // === FORM ===
-document.getElementById('entryForm').addEventListener('submit', (e) => {
+document.getElementById('entryForm').addEventListener('submit',(e)=>{
     e.preventDefault();
-    const data = {
-        instagram: document.getElementById('ig').value,
-        city: document.getElementById('city').value,
-        email: document.getElementById('email').value
-    };
-    localStorage.setItem('kazantip_applicant', JSON.stringify(data));
-    window.location.href = `interview.html?ig=${encodeURIComponent(data.instagram)}&city=${encodeURIComponent(data.city)}&email=${encodeURIComponent(data.email)}`;
+    const data={instagram:document.getElementById('ig').value,city:document.getElementById('city').value,email:document.getElementById('email').value};
+    localStorage.setItem('kazantip_applicant',JSON.stringify(data));
+    window.location.href=`interview.html?ig=${encodeURIComponent(data.instagram)}&city=${encodeURIComponent(data.city)}&email=${encodeURIComponent(data.email)}`;
 });
 
-// === TITLE FLICKER ===
-setInterval(() => {
-    if(Math.random() > 0.95){
-        document.querySelector('.start-logo').style.opacity = 0.3;
-        setTimeout(() => document.querySelector('.start-logo').style.opacity = 1, 50);
+// === FLICKER ===
+setInterval(()=>{
+    if(Math.random()>0.95){
+        document.querySelector('.start-logo').style.opacity=0.3;
+        setTimeout(()=>document.querySelector('.start-logo').style.opacity=1,50);
     }
-}, 100);
+},100);
 </script>
 </body>
 </html>
