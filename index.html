@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>KAZANTIP — ПОИСК СИГНАЛА</title>
+<meta name="description" content="Найди свою частоту. Вступи в Республику.">
+<meta property="og:title" content="KAZANTIP — ПОИСК СИГНАЛА">
+<meta property="og:description" content="Найди свою частоту. Вступи в Республику.">
+<meta property="og:type" content="website">
+
+<!-- Fonts: Space Grotesk + Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* === TOTALLITY FESTIVAL DESIGN SYSTEM === */
+/* Colors */
+:root{
+    --surface:#121318;
+    --surface-dim:#121318;
+    --surface-bright:#38393f;
+    --surface-container-lowest:#0d0e13;
+    --surface-container-low:#1a1b21;
+    --surface-container:#1e1f25;
+    --surface-container-high:#292a2f;
+    --surface-container-highest:#34343a;
+    --on-surface:#e3e1e9;
+    --on-surface-variant:#d0c6ab;
+    --primary:#fff6df;
+    --on-primary:#3a3000;
+    --primary-container:#ffd700;
+    --on-primary-container:#705e00;
+    --secondary:#bdf4ff;
+    --on-secondary:#00363d;
+    --secondary-container:#00e3fd;
+    --on-secondary-container:#00616d;
+    --tertiary:#fcf3ff;
+    --tertiary-container:#e7d1ff;
+    --outline:#999077;
+    --outline-variant:#4d4732;
+    --error:#ffb4ab;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+html,body{
+    height:100%;
+    background:var(--surface);
+    color:var(--on-surface);
+    font-family:'Inter',sans-serif;
+    overflow:hidden;
+    touch-action:none;
+    -webkit-font-smoothing:antialiased;
+}
+
+/* === CELESTIAL BACKGROUND === */
+.celestial-bg{
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(ellipse 80% 50% at 50% 50%, rgba(26,27,33,0.8) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 70% 30%, rgba(255,246,223,0.03) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 30% 70%, rgba(0,227,253,0.02) 0%, transparent 50%),
+        var(--surface);
+    z-index:0;
+}
+
+/* Stars field */
+.stars{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+}
+.star{
+    position:absolute;
+    width:2px;
+    height:2px;
+    background:var(--primary);
+    border-radius:50%;
+    opacity:0;
+    animation:twinkle 3s infinite ease-in-out;
+}
+@keyframes twinkle{
+    0%,100%{opacity:0}
+    50%{opacity:0.8}
+}
+
+/* === GLASSMORPHISM === */
+.glass{
+    background:rgba(52,52,58,0.25);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 8px 32px rgba(0,0,0,0.3);
+}
+
+.glass-strong{
+    background:rgba(52,52,58,0.4);
+    backdrop-filter:blur(40px);
+    -webkit-backdrop-filter:blur(40px);
+    border:1px solid rgba(255,255,255,0.12);
+}
+
+/* === TYPOGRAPHY (Space Grotesk) === */
+.display-xl{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(3rem,10vw,6rem);
+    font-weight:700;
+    line-height:1.1;
+    letter-spacing:-0.04em;
+    color:var(--primary);
+    text-shadow:0 0 40px rgba(255,246,223,0.15),0 0 80px rgba(255,246,223,0.05);
+}
+
+.display-lg{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(2rem,6vw,3.5rem);
+    font-weight:600;
+    line-height:1.15;
+    letter-spacing:-0.02em;
+    color:var(--primary);
+}
+
+.label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.75rem;
+    font-weight:500;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--on-surface-variant);
+}
+
+.body-lg{
+    font-family:'Inter',sans-serif;
+    font-size:1.125rem;
+    font-weight:400;
+    line-height:1.6;
+    color:var(--on-surface-variant);
+}
+
+/* === STAGE 1: SIGNAL DETECTION === */
+#stage1{
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:10;
+    transition:opacity 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+#stage1.hidden{
+    opacity:0;
+    pointer-events:none;
+}
+
+.status-bar{
+    position:fixed;
+    top:32px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    text-align:center;
+}
+
+.status-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 20px;
+    border-radius:9999px;
+    background:rgba(255,246,223,0.08);
+    border:1px solid rgba(255,246,223,0.15);
+}
+
+.status-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--outline);
+    animation:statusPulse 2s infinite;
+}
+.status-dot.hot{background:var(--primary-container);box-shadow:0 0 8px var(--primary-container)}
+.status-dot.locked{background:var(--secondary-container);box-shadow:0 0 8px var(--secondary-container)}
+@keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* === RADAR / SIGNAL VISUALIZER === */
+.radar-container{
+    position:relative;
+    width:320px;
+    height:320px;
+    margin:40px 0;
+}
+
+.radar-orbit{
+    position:absolute;
+    inset:0;
+    border:1px solid rgba(153,144,119,0.15);
+    border-radius:50%;
+}
+.radar-orbit:nth-child(2){inset:40px;animation-delay:.5s}
+.radar-orbit:nth-child(3){inset:80px;animation-delay:1s}
+.radar-orbit:nth-child(4){inset:120px;animation-delay:1.5s}
+
+.radar-sweep{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    overflow:hidden;
+}
+.radar-sweep::after{
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:50%;
+    height:1px;
+    background:linear-gradient(90deg,rgba(0,227,253,0.6),transparent);
+    transform-origin:left center;
+    animation:sweep 4s linear infinite;
+}
+@keyframes sweep{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+/* Signal core */
+.signal-core{
+    position:absolute;
+    inset:50%;
+    width:60px;
+    height:60px;
+    margin:-30px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,246,223,0.2) 0%,transparent 70%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .4s ease;
+}
+.signal-core.hot{
+    background:radial-gradient(circle,rgba(255,215,0,0.4) 0%,transparent 70%);
+    box-shadow:0 0 30px rgba(255,215,0,0.3),0 0 60px rgba(255,215,0,0.1);
+}
+.signal-core.locked{
+    background:radial-gradient(circle,rgba(0,227,253,0.5) 0%,transparent 70%);
+    box-shadow:0 0 40px rgba(0,227,253,0.4),0 0 80px rgba(0,227,253,0.2);
+}
+
+.freq-value{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:2.5rem;
+    font-weight:700;
+    color:var(--on-surface-variant);
+    transition:color .3s;
+}
+.freq-value.hot{color:var(--primary);text-shadow:0 0 20px rgba(255,246,223,.3)}
+.freq-value.locked{color:var(--secondary-container);text-shadow:0 0 20px rgba(0,227,253,.4)}
+
+/* === PROGRESS RING === */
+.progress-ring{
+    position:absolute;
+    inset:0;
+    transform:rotate(-90deg);
+}
+.progress-ring circle{
+    fill:none;
+    stroke-width:2;
+    transition:stroke-dashoffset .3s ease;
+}
+.progress-ring .bg{stroke:rgba(153,144,119,0.1)}
+.progress-ring .fill{stroke:var(--secondary-container);stroke-linecap:round}
+.progress-ring .fill.hot{stroke:var(--primary-container)}
+.progress-ring .fill.locked{stroke:var(--secondary-container)}
+
+/* === ZONE INDICATOR === */
+.zone-indicator{
+    margin-top:20px;
+    text-align:center;
+}
+.zone-label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.875rem;
+    font-weight:500;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--outline);
+    transition:color .3s;
+}
+.zone-label.hot{color:var(--primary-container);text-shadow:0 0 10px rgba(255,215,0,.3)}
+.zone-label.locked{color:var(--secondary-container);text-shadow:0 0 10px rgba(0,227,253,.3)}
+
+/* === START BUTTON === */
+.start-btn{
+    margin-top:48px;
+    padding:16px 48px;
+    background:transparent;
+    color:var(--primary);
+    border:1px solid rgba(255,246,223,0.3);
+    border-radius:12px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.875rem;
+    font-weight:500;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:all .3s ease;
+    position:relative;
+    overflow:hidden;
+}
+.start-btn::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg,rgba(255,246,223,0.1),transparent);
+    opacity:0;
+    transition:opacity .3s;
+}
+.start-btn:hover{
+    border-color:rgba(255,246,223,0.6);
+    box-shadow:0 0 30px rgba(255,246,223,0.1),inset 0 0 20px rgba(255,246,223,0.05);
+}
+.start-btn:hover::before{opacity:1}
+.start-btn:active{transform:scale(.98)}
+
+/* === LOCK BUTTON === */
+.lock-btn{
+    position:fixed;
+    bottom:48px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    padding:14px 40px;
+    background:var(--primary-container);
+    color:var(--on-primary-container);
+    border:none;
+    border-radius:12px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.8rem;
+    font-weight:600;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transition:all .4s cubic-bezier(0.4,0,0.2,1);
+    box-shadow:0 4px 20px rgba(255,215,0,0.3);
+    z-index:20;
+}
+.lock-btn.visible{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateX(-50%) translateY(0);
+}
+.lock-btn:hover{
+    box-shadow:0 4px 30px rgba(255,215,0,0.5),0 0 60px rgba(255,215,0,0.2);
+    transform:translateX(-50%) translateY(0) scale(1.02);
+}
+
+/* === INSTRUCTION === */
+.instruction{
+    position:fixed;
+    bottom:120px;
+    width:100%;
+    text-align:center;
+    font-family:'Inter',sans-serif;
+    font-size:0.875rem;
+    color:var(--outline);
+    opacity:.6;
+    transition:opacity .3s;
+    z-index:20;
+}
+
+/* === STAGE 2: FORM === */
+#stage2{
+    position:fixed;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 1s cubic-bezier(0.4,0,0.2,1);
+    z-index:50;
+    padding:20px;
+}
+#stage2.active{opacity:1;pointer-events:auto}
+
+.form-container{
+    width:100%;
+    max-width:420px;
+    padding:48px;
+    border-radius:16px;
+}
+
+.form-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1.75rem;
+    font-weight:600;
+    letter-spacing:-0.02em;
+    color:var(--primary);
+    margin-bottom:8px;
+    text-align:center;
+}
+
+.form-subtitle{
+    font-family:'Inter',sans-serif;
+    font-size:0.9375rem;
+    color:var(--on-surface-variant);
+    margin-bottom:40px;
+    text-align:center;
+}
+
+.form-group{
+    margin-bottom:24px;
+}
+
+.form-group label{
+    display:block;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.6875rem;
+    font-weight:500;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--on-surface-variant);
+    margin-bottom:10px;
+}
+
+.form-group input{
+    width:100%;
+    padding:14px 16px;
+    background:var(--surface-container-lowest);
+    border:1px solid rgba(153,144,119,0.2);
+    border-radius:12px;
+    color:var(--on-surface);
+    font-family:'Inter',sans-serif;
+    font-size:0.9375rem;
+    outline:none;
+    transition:all .3s ease;
+}
+
+.form-group input:focus{
+    border-color:var(--secondary-container);
+    box-shadow:0 0 0 3px rgba(0,227,253,0.1),0 0 20px rgba(0,227,253,0.1);
+}
+
+.form-group input::placeholder{
+    color:rgba(153,144,119,0.5);
+}
+
+.submit-btn{
+    width:100%;
+    padding:16px;
+    background:var(--primary-container);
+    color:var(--on-primary-container);
+    border:none;
+    border-radius:12px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.875rem;
+    font-weight:600;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition:all .3s ease;
+    margin-top:16px;
+}
+
+.submit-btn:hover{
+    box-shadow:0 4px 24px rgba(255,215,0,0.4),0 0 40px rgba(255,215,0,0.15);
+    transform:translateY(-1px);
+}
+
+/* === NOISE OVERLAY === */
+.noise{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    opacity:.04;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* === HINT FOR MOBILE === */
+.mobile-hint{
+    position:fixed;
+    bottom:160px;
+    width:100%;
+    text-align:center;
+    font-size:0.75rem;
+    color:var(--outline);
+    opacity:.4;
+    z-index:20;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeInUp{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.animate-in{
+    animation:fadeInUp .8s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+.delay-1{animation-delay:.1s;opacity:0}
+.delay-2{animation-delay:.2s;opacity:0}
+.delay-3{animation-delay:.3s;opacity:0}
+
+/* === DEBUG (hidden by default) === */
+#dbg{
+    position:fixed;
+    bottom:10px;
+    right:10px;
+    font-size:10px;
+    color:#444;
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<!-- Celestial Background -->
+<div class="celestial-bg"></div>
+
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Noise -->
+<div class="noise"></div>
+
+<!-- STAGE 1: Signal Detection -->
+<div id="stage1">
+    
+    <div class="status-bar">
+        <div class="status-pill">
+            <div class="status-dot" id="statusDot"></div>
+            <span class="label" id="statusText">ОЖИДАНИЕ СИГНАЛА</span>
+        </div>
+    </div>
+    
+    <div class="display-xl animate-in delay-1" id="mainTitle">SOOON</div>
+    
+    <div id="setup" class="animate-in delay-2">
+        <button class="start-btn" id="startBtn">Поймать Сигнал</button>
+    </div>
+    
+    <div id="gameUI" style="display:none;flex-direction:column;align-items:center">
+        <div class="radar-container">
+            <!-- Progress ring -->
+            <svg class="progress-ring" viewBox="0 0 320 320">
+                <circle class="bg" cx="160" cy="160" r="150" stroke-dasharray="942.5" stroke-dashoffset="0"></circle>
+                <circle class="fill" id="progressFill" cx="160" cy="160" r="150" 
+                    stroke-dasharray="942.5" stroke-dashoffset="942.5"></circle>
+            </svg>
+            
+            <div class="radar-orbit"></div>
+            <div class="radar-orbit"></div>
+            <div class="radar-orbit"></div>
+            <div class="radar-orbit"></div>
+            <div class="radar-sweep"></div>
+            <div class="signal-core" id="signalCore">
+                <div class="freq-value" id="freqDisplay">0%</div>
+            </div>
+        </div>
+        
+        <div class="zone-indicator">
+            <div class="zone-label" id="zoneText">Сканирование...</div>
+        </div>
+        
+        <div class="mobile-hint" id="mobileHint">Свайпай вверх / вниз для настройки частоты</div>
+        
+        <button class="lock-btn" id="lockBtn">Фиксировать Сигнал</button>
+    </div>
+</div>
+
+<!-- STAGE 2: Entry Form -->
+<div id="stage2">
+    <div class="form-container glass-strong">
+        <div class="form-title">Вступить в Республику</div>
+        <div class="form-subtitle">Оставь координаты для получения Визы</div>
+        
+        <form id="entryForm">
+            <div class="form-group">
+                <label>Instagram</label>
+                <input type="text" id="ig" placeholder="@username" required>
+            </div>
+            <div class="form-group">
+                <label>Город</label>
+                <input type="text" id="city" placeholder="Москва" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="signal@example.com" required>
+            </div>
+            <button type="submit" class="submit-btn">Начать Ритуал</button>
+        </form>
+    </div>
+</div>
+
+<div id="dbg"></div>
+
+<script>
+// === STAR FIELD ===
+const starsContainer = document.getElementById('stars');
+for(let i = 0; i < 60; i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (2 + Math.random() * 2) + 's';
+    starsContainer.appendChild(star);
+}
+
+// === GAME STATE ===
+let currentFreq = 0;
+let targetFreq = 85;
+let inHotZone = false;
+let hotZoneTimer = null;
+let signalLocked = false;
+
+const startBtn = document.getElementById('startBtn');
+const setup = document.getElementById('setup');
+const gameUI = document.getElementById('gameUI');
+const freqDisplay = document.getElementById('freqDisplay');
+const progressFill = document.getElementById('progressFill');
+const zoneText = document.getElementById('zoneText');
+const lockBtn = document.getElementById('lockBtn');
+const statusText = document.getElementById('statusText');
+const statusDot = document.getElementById('statusDot');
+const signalCore = document.getElementById('signalCore');
+const mainTitle = document.getElementById('mainTitle');
+
+function updateDisplay(){
+    freqDisplay.innerText = Math.round(currentFreq) + '%';
+    
+    // Progress ring (942.5 is circumference)
+    const circumference = 942.5;
+    const offset = circumference - (currentFreq / 100) * circumference;
+    progressFill.style.strokeDashoffset = offset;
+    
+    const dist = Math.abs(currentFreq - targetFreq);
+    const proximity = Math.max(0, 1 - dist / 30);
+    
+    // Visual states
+    if(proximity > 0.8){
+        zoneText.innerText = 'СИГНАЛ НАЙДЕН';
+        zoneText.className = 'zone-label locked';
+        signalCore.className = 'signal-core locked';
+        freqDisplay.className = 'freq-value locked';
+        progressFill.className.baseVal = 'fill locked';
+        statusText.innerText = 'ЧАСТОТА СОВПАДАЕТ';
+        statusDot.className = 'status-dot locked';
+        document.getElementById('mobileHint').style.opacity = '0';
+    } else if(proximity > 0.5){
+        zoneText.innerText = 'ПРИБЛИЖЕНИЕ...';
+        zoneText.className = 'zone-label hot';
+        signalCore.className = 'signal-core hot';
+        freqDisplay.className = 'freq-value hot';
+        progressFill.className.baseVal = 'fill hot';
+        statusText.innerText = 'ГОРЯЧАЯ ЗОНА';
+        statusDot.className = 'status-dot hot';
+    } else {
+        zoneText.innerText = 'Сканирование...';
+        zoneText.className = 'zone-label';
+        signalCore.className = 'signal-core';
+        freqDisplay.className = 'freq-value';
+        progressFill.className.baseVal = 'fill';
+        statusText.innerText = 'ПОИСК ЧАСТОТЫ';
+        statusDot.className = 'status-dot';
+    }
+    
+    // Auto-lock
+    if(proximity > 0.8 && !inHotZone && !signalLocked){
+        inHotZone = true;
+        lockBtn.classList.add('visible');
+        hotZoneTimer = setTimeout(()=>{
+            if(!signalLocked) lockSignal();
+        }, 3000);
+    } else if(proximity <= 0.8 && inHotZone){
+        inHotZone = false;
+        lockBtn.classList.remove('visible');
+        clearTimeout(hotZoneTimer);
+    }
+}
+
+function lockSignal(){
+    if(signalLocked) return;
+    signalLocked = true;
+    clearTimeout(hotZoneTimer);
+    
+    statusText.innerText = 'СИГНАЛ ПОЙМАН';
+    zoneText.innerText = 'LOCKED';
+    freqDisplay.innerText = 'LOCK';
+    
+    if(navigator.vibrate) navigator.vibrate([100,50,100,50,200,100,300]);
+    
+    setTimeout(()=>{
+        document.getElementById('stage1').classList.add('hidden');
+        document.getElementById('stage2').classList.add('active');
+    }, 1500);
+}
+
+lockBtn.addEventListener('click', lockSignal);
+
+// === CONTROLS ===
+let isDragging = false;
+let startY = 0;
+let startFreq = 0;
+
+startBtn.addEventListener('click', ()=>{
+    setup.style.display = 'none';
+    gameUI.style.display = 'flex';
+    statusText.innerText = 'ПОИСК ЧАСТОТЫ';
+    
+    // Try gyroscope
+    if(typeof DeviceOrientationEvent !== 'undefined'){
+        if(typeof DeviceOrientationEvent.requestPermission === 'function'){
+            DeviceOrientationEvent.requestPermission().then(response=>{
+                if(response === 'granted'){
+                    window.addEventListener('deviceorientation', (e)=>{
+                        if(e.beta !== null && e.beta !== undefined){
+                            currentFreq = Math.max(0, Math.min(100, (Math.abs(e.beta) / 180) * 100));
+                            updateDisplay();
+                        }
+                    });
+                }
+            }).catch(()=>{});
+        } else {
+            window.addEventListener('deviceorientation', (e)=>{
+                if(e.beta !== null && e.beta !== undefined){
+                    currentFreq = Math.max(0, Math.min(100, (Math.abs(e.beta) / 180) * 100));
+                    updateDisplay();
+                }
+            });
+        }
+    }
+});
+
+// Touch
+window.addEventListener('touchstart', (e)=>{
+    isDragging = true;
+    startY = e.touches[0].clientY;
+    startFreq = currentFreq;
+}, {passive:true});
+
+window.addEventListener('touchmove', (e)=>{
+    if(!isDragging) return;
+    const dy = startY - e.touches[0].clientY;
+    currentFreq = Math.max(0, Math.min(100, startFreq + (dy / window.innerHeight) * 100));
+    updateDisplay();
+}, {passive:true});
+
+window.addEventListener('touchend', ()=>isDragging = false);
+
+// Mouse
+window.addEventListener('mousedown', (e)=>{
+    isDragging = true;
+    startY = e.clientY;
+    startFreq = currentFreq;
+});
+
+window.addEventListener('mousemove', (e)=>{
+    if(!isDragging) return;
+    const dy = startY - e.clientY;
+    currentFreq = Math.max(0, Math.min(100, startFreq + (dy / window.innerHeight) * 100));
+    updateDisplay();
+});
+
+window.addEventListener('mouseup', ()=>isDragging = false);
+
+// Scroll
+window.addEventListener('wheel', (e)=>{
+    currentFreq = Math.max(0, Math.min(100, currentFreq - e.deltaY * 0.05));
+    updateDisplay();
+}, {passive:true});
+
+// Keyboard
+window.addEventListener('keydown', (e)=>{
+    if(e.key === 'ArrowUp'){
+        currentFreq = Math.min(100, currentFreq + 2);
+        updateDisplay();
+    } else if(e.key === 'ArrowDown'){
+        currentFreq = Math.max(0, currentFreq - 2);
+        updateDisplay();
+    } else if(e.key === ' ' || e.key === 'Enter'){
+        if(inHotZone) lockSignal();
+    }
+});
+
+// === FORM ===
+document.getElementById('entryForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const data = {
+        instagram: document.getElementById('ig').value,
+        city: document.getElementById('city').value,
+        email: document.getElementById('email').value
+    };
+    localStorage.setItem('kazantip_applicant', JSON.stringify(data));
+    window.location.href = `interview.html?ig=${encodeURIComponent(data.instagram)}&city=${encodeURIComponent(data.city)}&email=${encodeURIComponent(data.email)}`;
+});
+
+// Title flicker
+setInterval(()=>{
+    if(Math.random() > 0.95){
+        mainTitle.style.opacity = 0.3;
+        setTimeout(()=>mainTitle.style.opacity = 1, 50);
+    }
+}, 100);
+</script>
+</body>
+</html>
