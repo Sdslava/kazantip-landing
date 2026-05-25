@@ -3,31 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>KAZANTIP — SIGNAL HUNT</title>
+<title>SOOON — SIGNAL HUNT</title>
 <meta name="description" content="Найди свою частоту. Вступи в Республику.">
-<meta property="og:title" content="KAZANTIP — SIGNAL HUNT">
+<meta property="og:title" content="SOOON — SIGNAL HUNT">
 <meta property="og:description" content="Найди свою частоту. Вступи в Республику.">
 <meta property="og:type" content="website">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 :root{
-    --noise-light:rgba(255,255,255,0.8);
-    --noise-dim:rgba(200,200,200,0.4);
-    --signal-cyan:rgba(0,227,253,0.6);
-    --signal-gold:rgba(255,215,0,0.5);
-    --ui-dim:rgba(153,144,119,0.4);
-    --ui-bright:rgba(255,246,223,0.9);
+    --kzn-yellow:#FFD700;
+    --kzn-yellow-bright:#FFE44D;
+    --kzn-yellow-dim:#B8A020;
+    --kzn-black:#0A0A0A;
+    --kzn-black-light:#141414;
+    --kzn-gray:#2A2A2A;
+    --kzn-surface:#111111;
+    --signal-cyan:#00E3FD;
+    --ui-dim:rgba(255,215,0,0.4);
+    --ui-bright:#FFD700;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
 
 html,body{
     height:100%;
-    background:#0a0a0a;
+    background:var(--kzn-black);
     color:var(--ui-bright);
     font-family:'Space Grotesk',sans-serif;
     overflow:hidden;
@@ -35,13 +39,26 @@ html,body{
     -webkit-font-smoothing:antialiased;
 }
 
-/* === FULL SCREEN TV STATIC (ALWAYS ACTIVE) === */
+/* === KZNTP PATTERN BACKGROUND === */
+.pattern-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:var(--kzn-black);
+    opacity:0.08;
+    background-image:
+        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.03) 35px, rgba(255,215,0,0.03) 70px),
+        repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,215,0,0.02) 35px, rgba(255,215,0,0.02) 70px);
+}
+
+/* === TV STATIC (GRAINY) === */
 #static-canvas{
     position:fixed;
     inset:0;
     z-index:1;
     width:100%;
     height:100%;
+    opacity:0.9;
 }
 
 /* === SCANLINES === */
@@ -54,93 +71,59 @@ html,body{
         0deg,
         transparent,
         transparent 2px,
-        rgba(0,0,0,0.08) 2px,
-        rgba(0,0,0,0.08) 4px
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
     );
-    opacity:0.6;
+    opacity:0.5;
 }
 
-/* === CRT CURVATURE === */
-.crt-curve{
+/* === CRT CURVE + VIGNETTE === */
+.crt-overlay{
     position:fixed;
     inset:0;
     z-index:3;
     pointer-events:none;
-    background:radial-gradient(
-        ellipse 100% 100% at 50% 50%,
-        transparent 50%,
-        rgba(0,0,0,0.4) 100%
-    );
+    background:
+        radial-gradient(ellipse 100% 100% at 50% 50%, transparent 60%, rgba(0,0,0,0.6) 100%),
+        radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
 }
 
-/* === VIGNETTE === */
-.vignette{
-    position:fixed;
-    inset:0;
-    z-index:4;
-    pointer-events:none;
-    background:radial-gradient(
-        ellipse 90% 90% at 50% 50%,
-        transparent 40%,
-        rgba(0,0,0,0.7) 100%
-    );
-}
-
-/* === SIGNAL PORTAL (SOFT, BLEEDING INTO NOISE) === */
+/* === SIGNAL PORTAL (SOFT, BLEEDING) === */
 .signal-portal{
     position:fixed;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:260px;
-    height:340px;
+    width:280px;
+    height:360px;
     z-index:5;
     border-radius:50%;
     overflow:hidden;
     transition:all 0.8s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Soft edge that bleeds into noise */
+/* Glow that bleeds into noise */
 .signal-portal::before{
     content:'';
     position:absolute;
-    inset:-40px;
+    inset:-60px;
     border-radius:50%;
     background:radial-gradient(
         ellipse 50% 50% at 50% 50%,
-        rgba(0,227,253,0.15) 0%,
-        rgba(0,227,253,0.05) 40%,
+        rgba(255,215,0,0.2) 0%,
+        rgba(255,215,0,0.05) 40%,
         transparent 70%
     );
     opacity:0;
     transition:opacity 0.8s;
     pointer-events:none;
+    filter:blur(30px);
 }
 .signal-portal.active::before{
     opacity:1;
 }
 
-/* Inner glow that spills */
-.signal-portal::after{
-    content:'';
-    position:absolute;
-    inset:-80px;
-    border-radius:50%;
-    background:radial-gradient(
-        ellipse 50% 50% at 50% 50%,
-        rgba(0,227,253,0.1) 0%,
-        transparent 60%
-    );
-    opacity:0;
-    transition:opacity 1.2s;
-    pointer-events:none;
-    filter:blur(20px);
-}
-.signal-portal.locking::after{
-    opacity:1;
-}
-
-/* Video inside portal */
+/* Inner video */
 #portal-video{
     position:absolute;
     inset:0;
@@ -155,20 +138,18 @@ html,body{
     opacity:1;
 }
 
-/* Video glitch when locking */
 #portal-video.glitching{
     animation:portalGlitch 0.12s infinite;
 }
 @keyframes portalGlitch{
     0%{transform:translate(0) scale(1);filter:contrast(1.3) saturate(1.2)}
-    20%{transform:translate(-3px,1px) scale(1.02);filter:contrast(1.8) saturate(2) hue-rotate(30deg)}
-    40%{transform:translate(2px,-2px) scale(0.98);filter:contrast(0.8) saturate(0.5) hue-rotate(-20deg)}
-    60%{transform:translate(-1px,3px) scale(1.01);filter:contrast(1.5) saturate(1.8) hue-rotate(45deg)}
-    80%{transform:translate(1px,-1px) scale(0.99);filter:contrast(1.1) saturate(0.8)}
+    25%{transform:translate(-3px,1px) scale(1.02);filter:contrast(1.8) saturate(2) hue-rotate(30deg)}
+    50%{transform:translate(2px,-2px) scale(0.98);filter:contrast(0.8) saturate(0.5) hue-rotate(-20deg)}
+    75%{transform:translate(-1px,3px) scale(1.01);filter:contrast(1.5) saturate(1.8)}
     100%{transform:translate(0) scale(1);filter:contrast(1.3) saturate(1.2)}
 }
 
-/* Portal placeholder — faint shape in noise */
+/* Placeholder - yellow glow */
 .portal-placeholder{
     position:absolute;
     inset:0;
@@ -181,19 +162,19 @@ html,body{
     opacity:0;
 }
 
-.placeholder-glow{
-    width:80px;
-    height:80px;
+.placeholder-core{
+    width:100px;
+    height:100px;
     border-radius:50%;
-    background:radial-gradient(circle,rgba(0,227,253,0.3),transparent 70%);
-    animation:placeholderPulse 2s infinite;
+    background:radial-gradient(circle, rgba(255,215,0,0.4), transparent 70%);
+    animation:corePulse 2s infinite;
 }
-@keyframes placeholderPulse{
-    0%,100%{transform:scale(1);opacity:0.3}
-    50%{transform:scale(1.4);opacity:0.8}
+@keyframes corePulse{
+    0%,100%{transform:scale(1);opacity:0.4}
+    50%{transform:scale(1.5);opacity:0.9}
 }
 
-/* === SIGNAL BURSTS (FLASHES IN NOISE) === */
+/* === SIGNAL BURST FLASH === */
 .signal-burst{
     position:fixed;
     inset:0;
@@ -203,8 +184,8 @@ html,body{
     transition:opacity 0.05s;
     background:radial-gradient(
         ellipse 60% 70% at 50% 50%,
-        rgba(255,255,255,0.9) 0%,
-        rgba(0,227,253,0.3) 30%,
+        rgba(255,215,0,0.8) 0%,
+        rgba(255,215,0,0.2) 30%,
         transparent 60%
     );
     mix-blend-mode:screen;
@@ -213,39 +194,102 @@ html,body{
     opacity:1;
 }
 
-/* === ANALOG METERS (LEFT SIDE) === */
-.meter-panel-left{
+/* === DECORATIVE FRAMES (KZNTP STYLE) === */
+.deco-frame{
     position:fixed;
-    left:16px;
+    z-index:10;
+    pointer-events:none;
+}
+
+.deco-frame.top-left{
+    top:20px;
+    left:20px;
+    width:60px;
+    height:60px;
+    border-left:2px solid var(--kzn-yellow);
+    border-top:2px solid var(--kzn-yellow);
+    opacity:0.6;
+}
+
+.deco-frame.top-right{
+    top:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-right:2px solid var(--kzn-yellow);
+    border-top:2px solid var(--kzn-yellow);
+    opacity:0.6;
+}
+
+.deco-frame.bottom-left{
+    bottom:20px;
+    left:20px;
+    width:60px;
+    height:60px;
+    border-left:2px solid var(--kzn-yellow);
+    border-bottom:2px solid var(--kzn-yellow);
+    opacity:0.6;
+}
+
+.deco-frame.bottom-right{
+    bottom:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-right:2px solid var(--kzn-yellow);
+    border-bottom:2px solid var(--kzn-yellow);
+    opacity:0.6;
+}
+
+/* === SOOON TITLE (LARGE, BEHIND NOISE) === */
+.sooon-title{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:4;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(4rem,15vw,10rem);
+    font-weight:800;
+    letter-spacing:-0.05em;
+    color:rgba(255,215,0,0.06);
+    text-transform:uppercase;
+    pointer-events:none;
+    white-space:nowrap;
+}
+
+/* === ANALOG METERS (LEFT) === */
+.meter-panel{
+    position:fixed;
+    left:20px;
     top:50%;
     transform:translateY(-50%);
     z-index:20;
     display:flex;
     flex-direction:column;
-    gap:20px;
+    gap:24px;
 }
 
 .meter{
-    width:48px;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:4px;
+    gap:6px;
 }
 
 .meter-label{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.55rem;
+    font-size:0.6rem;
     color:var(--ui-dim);
-    letter-spacing:0.1em;
+    letter-spacing:0.15em;
     text-transform:uppercase;
 }
 
 .meter-scale{
-    width:40px;
-    height:120px;
-    background:rgba(0,0,0,0.6);
-    border:1px solid rgba(153,144,119,0.2);
+    width:36px;
+    height:140px;
+    background:rgba(20,20,20,0.8);
+    border:1px solid rgba(255,215,0,0.2);
     border-radius:4px;
     position:relative;
     overflow:hidden;
@@ -254,11 +298,11 @@ html,body{
 .meter-bar{
     position:absolute;
     bottom:0;
-    left:2px;
-    right:2px;
+    left:3px;
+    right:3px;
     background:linear-gradient(to top,
-        rgba(0,227,253,0.6),
-        rgba(255,215,0,0.5),
+        var(--kzn-yellow),
+        rgba(255,215,0,0.6),
         rgba(255,100,50,0.7)
     );
     border-radius:2px;
@@ -270,27 +314,28 @@ html,body{
     position:absolute;
     left:0;
     right:0;
-    height:1px;
+    height:2px;
     background:rgba(255,100,50,0.8);
+    box-shadow:0 0 4px rgba(255,100,50,0.5);
     transition:bottom 0.3s;
 }
 
-/* === ANALOG DIAL (RIGHT SIDE) === */
-.dial-panel-right{
+/* === ANALOG DIAL (RIGHT) === */
+.dial-panel{
     position:fixed;
-    right:16px;
+    right:20px;
     top:50%;
     transform:translateY(-50%);
     z-index:20;
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:8px;
+    gap:10px;
 }
 
-.dial-large{
-    width:80px;
-    height:80px;
+.dial-circle{
+    width:90px;
+    height:90px;
     position:relative;
 }
 
@@ -298,9 +343,10 @@ html,body{
     width:100%;
     height:100%;
     border-radius:50%;
-    background:rgba(0,0,0,0.6);
-    border:1px solid rgba(153,144,119,0.2);
+    background:rgba(20,20,20,0.8);
+    border:2px solid rgba(255,215,0,0.25);
     position:relative;
+    box-shadow:0 0 20px rgba(255,215,0,0.1);
 }
 
 .dial-needle{
@@ -308,28 +354,29 @@ html,body{
     top:50%;
     left:50%;
     width:2px;
-    height:34px;
-    background:linear-gradient(to top,var(--signal-gold),rgba(255,215,0,0.3));
+    height:38px;
+    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,215,0,0.3));
     transform-origin:bottom center;
     transform:translate(-50%,-100%) rotate(-135deg);
     transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
     border-radius:1px;
 }
 
-.dial-center{
+.dial-center-dot{
     position:absolute;
     top:50%;
     left:50%;
-    width:6px;
-    height:6px;
-    background:var(--ui-dim);
+    width:8px;
+    height:8px;
+    background:var(--kzn-yellow);
     border-radius:50%;
     transform:translate(-50%,-50%);
+    box-shadow:0 0 10px rgba(255,215,0,0.5);
 }
 
 .dial-ticks{
     position:absolute;
-    inset:4px;
+    inset:6px;
 }
 
 .dial-tick{
@@ -337,41 +384,42 @@ html,body{
     top:0;
     left:50%;
     width:1px;
-    height:4px;
-    background:rgba(153,144,119,0.3);
-    transform-origin:center 34px;
+    height:5px;
+    background:rgba(255,215,0,0.3);
+    transform-origin:center 36px;
 }
 
 .dial-value{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.65rem;
+    font-size:0.7rem;
     color:var(--ui-dim);
     letter-spacing:0.05em;
 }
-.dial-value.hot{color:var(--signal-gold)}
+.dial-value.hot{color:var(--kzn-yellow);text-shadow:0 0 8px rgba(255,215,0,0.3)}
 
 /* === OSCILLOSCOPE (BOTTOM) === */
 .oscilloscope{
     position:fixed;
-    bottom:100px;
+    bottom:110px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
-    width:240px;
-    height:70px;
-    background:rgba(0,0,0,0.5);
-    border:1px solid rgba(153,144,119,0.15);
-    border-radius:6px;
+    width:260px;
+    height:75px;
+    background:rgba(20,20,20,0.8);
+    border:1px solid rgba(255,215,0,0.15);
+    border-radius:8px;
     overflow:hidden;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
 }
 
-.oscilloscope-label{
+.oscilloscope-header{
     position:absolute;
-    top:2px;
-    right:6px;
+    top:3px;
+    right:8px;
     font-family:'Share Tech Mono',monospace;
     font-size:0.5rem;
-    color:rgba(153,144,119,0.4);
+    color:rgba(255,215,0,0.3);
     letter-spacing:0.1em;
 }
 
@@ -381,104 +429,165 @@ html,body{
 }
 
 /* === COMPASS (TOP CENTER) === */
-.compass-top{
+.compass-area{
     position:fixed;
-    top:24px;
+    top:28px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
     display:flex;
     align-items:center;
-    gap:16px;
+    gap:20px;
+    background:rgba(10,10,10,0.6);
+    padding:10px 24px;
+    border-radius:12px;
+    border:1px solid rgba(255,215,0,0.15);
+    backdrop-filter:blur(10px);
 }
 
-.compass-mini{
-    width:48px;
-    height:48px;
+.compass-icon{
+    width:44px;
+    height:44px;
     position:relative;
 }
 
-.compass-mini-ring{
+.compass-ring{
     position:absolute;
     inset:0;
-    border:1px solid rgba(153,144,119,0.2);
+    border:1.5px solid rgba(255,215,0,0.3);
     border-radius:50%;
 }
 
-.compass-mini-arrow{
+.compass-arrow{
     position:absolute;
     top:50%;
     left:50%;
     width:2px;
-    height:18px;
+    height:16px;
     background:var(--ui-dim);
     transform-origin:bottom center;
     transform:translate(-50%,-100%) rotate(0deg);
     transition:all .3s;
 }
-.compass-mini-arrow.hot{
-    background:var(--signal-gold);
-    box-shadow:0 0 6px rgba(255,215,0,0.5);
+.compass-arrow.hot{
+    background:var(--kzn-yellow);
+    box-shadow:0 0 8px rgba(255,215,0,0.6);
 }
 
-.compass-mini-arrow::after{
+.compass-arrow::after{
     content:'';
     position:absolute;
-    top:-4px;
+    top:-5px;
     left:50%;
     transform:translateX(-50%);
-    border-left:3px solid transparent;
-    border-right:3px solid transparent;
-    border-bottom:5px solid var(--ui-dim);
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-bottom:6px solid var(--ui-dim);
 }
-.compass-mini-arrow.hot::after{
-    border-bottom-color:var(--signal-gold);
+.compass-arrow.hot::after{
+    border-bottom-color:var(--kzn-yellow);
 }
 
-.compass-readout{
+.compass-info{
     font-family:'Share Tech Mono',monospace;
     font-size:0.75rem;
     color:var(--ui-dim);
     letter-spacing:0.05em;
+    line-height:1.5;
 }
-.compass-readout.hot{
-    color:var(--signal-gold);
-    text-shadow:0 0 8px rgba(255,215,0,0.3);
-}
+.compass-info.hot{color:var(--kzn-yellow)}
 
-/* === STATUS (TOP LEFT) === */
-.status-display{
+/* === STATUS (TOP LEFT, INSIDE FRAME) === */
+.status-panel{
     position:fixed;
-    top:24px;
-    left:16px;
+    top:32px;
+    left:32px;
     z-index:20;
     font-family:'Share Tech Mono',monospace;
     font-size:0.65rem;
     color:var(--ui-dim);
     letter-spacing:0.1em;
-    line-height:1.6;
+    line-height:1.8;
 }
 
-.status-line{
+.status-row{
     display:flex;
-    gap:8px;
+    gap:10px;
 }
 
-.status-label{
-    color:rgba(153,144,119,0.4);
-    min-width:60px;
+.status-key{
+    color:rgba(255,215,0,0.3);
+    min-width:65px;
 }
 
-.status-value{
-    color:var(--ui-bright);
+.status-val{
+    color:var(--kzn-yellow-dim);
 }
-.status-value.hot{color:var(--signal-gold)}
-.status-value.locking{color:var(--signal-cyan)}
+.status-val.hot{color:var(--kzn-yellow);text-shadow:0 0 6px rgba(255,215,0,0.3)}
+.status-val.locking{color:var(--signal-cyan);text-shadow:0 0 6px rgba(0,227,253,0.3)}
 
 .status-blink{
-    animation:statusBlink 1s infinite;
+    animation:blink 1s infinite;
 }
-@keyframes statusBlink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* === SCAN BAR === */
+.scan-bar{
+    position:fixed;
+    left:0;
+    right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,var(--kzn-yellow),transparent);
+    z-index:7;
+    pointer-events:none;
+    opacity:0;
+    box-shadow:0 0 10px var(--kzn-yellow);
+}
+.scan-bar.active{
+    opacity:0.6;
+    animation:scanMove 0.6s linear;
+}
+@keyframes scanMove{0%{top:0%}100%{top:100%}}
+
+/* === INTERFERENCE OVERLAY === */
+.interference{
+    position:fixed;
+    inset:0;
+    z-index:10;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transition:opacity 0.1s;
+}
+.interference.active{
+    opacity:1;
+}
+
+.interference-box{
+    padding:16px 32px;
+    background:rgba(10,10,10,0.9);
+    border:1.5px solid var(--kzn-yellow);
+    box-shadow:0 0 30px rgba(255,215,0,0.2), inset 0 0 20px rgba(255,215,0,0.05);
+}
+
+.interference-text{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.9rem;
+    font-weight:700;
+    color:var(--kzn-yellow);
+    letter-spacing:0.25em;
+    text-transform:uppercase;
+    text-shadow:0 0 15px rgba(255,215,0,0.5);
+    animation:textGlitch 0.08s infinite;
+}
+@keyframes textGlitch{
+    0%,100%{opacity:1;transform:translate(0)}
+    25%{opacity:0.7;transform:translate(-1px,1px)}
+    50%{opacity:0.9;transform:translate(1px,-1px)}
+    75%{opacity:0.6;transform:translate(-1px,-1px)}
+}
 
 /* === START SCREEN === */
 #start-screen{
@@ -490,54 +599,69 @@ html,body{
     justify-content:center;
     z-index:30;
     transition:opacity 1s;
+    background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,215,0,0.05), transparent 70%);
 }
 #start-screen.hidden{
     opacity:0;
     pointer-events:none;
 }
 
-.start-title{
+.start-logo{
     font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(2rem,6vw,3.5rem);
-    font-weight:700;
-    letter-spacing:-0.02em;
-    color:var(--ui-bright);
-    text-shadow:0 0 40px rgba(255,255,255,0.1);
+    font-size:clamp(3rem,10vw,6rem);
+    font-weight:800;
+    letter-spacing:-0.03em;
+    color:var(--kzn-yellow);
+    text-shadow:0 0 60px rgba(255,215,0,0.3);
     margin-bottom:8px;
 }
 
-.start-subtitle{
+.start-tagline{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.75rem;
-    color:var(--ui-dim);
-    letter-spacing:0.15em;
-    margin-bottom:40px;
+    font-size:0.8rem;
+    color:rgba(255,215,0,0.5);
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    margin-bottom:48px;
 }
 
 .start-btn{
-    padding:16px 48px;
+    padding:18px 56px;
     background:transparent;
-    color:var(--ui-bright);
-    border:1px solid rgba(255,255,255,0.2);
-    border-radius:8px;
+    color:var(--kzn-yellow);
+    border:2px solid var(--kzn-yellow);
+    border-radius:0;
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.875rem;
-    font-weight:500;
-    letter-spacing:0.12em;
+    font-size:0.9rem;
+    font-weight:600;
+    letter-spacing:0.15em;
     text-transform:uppercase;
     cursor:pointer;
     transition:all .3s;
+    position:relative;
+    overflow:hidden;
+}
+.start-btn::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:var(--kzn-yellow);
+    transform:translateX(-100%);
+    transition:transform 0.3s;
+    z-index:-1;
 }
 .start-btn:hover{
-    border-color:rgba(255,255,255,0.4);
-    background:rgba(255,255,255,0.05);
+    color:var(--kzn-black);
+}
+.start-btn:hover::before{
+    transform:translateX(0);
 }
 
 .start-hint{
-    margin-top:24px;
+    margin-top:32px;
     font-family:'Share Tech Mono',monospace;
     font-size:0.65rem;
-    color:rgba(153,144,119,0.5);
+    color:rgba(255,215,0,0.4);
     letter-spacing:0.1em;
     text-align:center;
     line-height:1.8;
@@ -546,18 +670,18 @@ html,body{
 /* === LOCK BUTTON === */
 .lock-btn{
     position:fixed;
-    bottom:32px;
+    bottom:40px;
     left:50%;
     transform:translateX(-50%) translateY(20px);
-    padding:14px 40px;
-    background:rgba(255,215,0,0.15);
-    color:var(--signal-gold);
-    border:1px solid rgba(255,215,0,0.4);
-    border-radius:8px;
+    padding:16px 48px;
+    background:rgba(255,215,0,0.1);
+    color:var(--kzn-yellow);
+    border:2px solid var(--kzn-yellow);
+    border-radius:0;
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.8rem;
+    font-size:0.85rem;
     font-weight:600;
-    letter-spacing:0.1em;
+    letter-spacing:0.15em;
     text-transform:uppercase;
     cursor:pointer;
     opacity:0;
@@ -572,44 +696,9 @@ html,body{
     transform:translateX(-50%) translateY(0);
 }
 .lock-btn:hover{
-    background:rgba(255,215,0,0.25);
-    box-shadow:0 0 30px rgba(255,215,0,0.3);
-}
-
-/* === INTERFERENCE TEXT (KAZANTIP THEMED) === */
-.interference-overlay{
-    position:fixed;
-    inset:0;
-    z-index:10;
-    pointer-events:none;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    opacity:0;
-    transition:opacity 0.1s;
-}
-.interference-overlay.active{
-    opacity:1;
-}
-
-.interference-text{
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.8rem;
-    color:rgba(255,215,0,0.7);
-    letter-spacing:0.2em;
-    text-transform:uppercase;
-    text-shadow:0 0 20px rgba(255,215,0,0.4);
-    animation:textGlitch 0.08s infinite;
-    text-align:center;
-    padding:12px 24px;
-    background:rgba(0,0,0,0.8);
-    border:1px solid rgba(255,215,0,0.2);
-}
-@keyframes textGlitch{
-    0%,100%{opacity:1;transform:translate(0)}
-    25%{opacity:0.7;transform:translate(-1px,1px)}
-    50%{opacity:0.9;transform:translate(1px,-1px)}
-    75%{opacity:0.6;transform:translate(-1px,-1px)}
+    background:var(--kzn-yellow);
+    color:var(--kzn-black);
+    box-shadow:0 0 40px rgba(255,215,0,0.4);
 }
 
 /* === STAGE 2: FORM === */
@@ -625,35 +714,46 @@ html,body{
     transition:opacity 1s;
     z-index:50;
     padding:20px;
-    background:rgba(0,0,0,0.9);
+    background:var(--kzn-black);
 }
 #stage2.active{
     opacity:1;
     pointer-events:auto;
 }
 
-.form-container{
+.form-box{
     width:100%;
     max-width:420px;
     padding:48px;
-    border-radius:12px;
-    background:rgba(20,20,20,0.9);
-    border:1px solid rgba(255,255,255,0.1);
+    background:var(--kzn-black-light);
+    border:2px solid rgba(255,215,0,0.2);
+    position:relative;
+}
+
+.form-box::before{
+    content:'';
+    position:absolute;
+    top:-2px;
+    left:30px;
+    right:30px;
+    height:2px;
+    background:var(--kzn-yellow);
 }
 
 .form-title{
     font-family:'Space Grotesk',sans-serif;
     font-size:1.75rem;
-    font-weight:600;
-    color:var(--ui-bright);
+    font-weight:700;
+    color:var(--kzn-yellow);
     margin-bottom:8px;
     text-align:center;
+    letter-spacing:-0.02em;
 }
 
 .form-subtitle{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.8rem;
-    color:var(--ui-dim);
+    font-size:0.75rem;
+    color:rgba(255,215,0,0.5);
     margin-bottom:40px;
     text-align:center;
     letter-spacing:0.05em;
@@ -666,20 +766,20 @@ html,body{
 .form-group label{
     display:block;
     font-family:'Share Tech Mono',monospace;
-    font-size:0.65rem;
-    letter-spacing:0.12em;
+    font-size:0.6rem;
+    letter-spacing:0.15em;
     text-transform:uppercase;
-    color:var(--ui-dim);
+    color:rgba(255,215,0,0.5);
     margin-bottom:10px;
 }
 
 .form-group input{
     width:100%;
     padding:14px 16px;
-    background:rgba(0,0,0,0.6);
-    border:1px solid rgba(153,144,119,0.2);
-    border-radius:8px;
-    color:var(--ui-bright);
+    background:var(--kzn-black);
+    border:1px solid rgba(255,215,0,0.2);
+    border-radius:0;
+    color:var(--kzn-yellow);
     font-family:'Space Grotesk',sans-serif;
     font-size:0.9375rem;
     outline:none;
@@ -687,25 +787,25 @@ html,body{
 }
 
 .form-group input:focus{
-    border-color:var(--signal-cyan);
-    box-shadow:0 0 0 2px rgba(0,227,253,0.1);
+    border-color:var(--kzn-yellow);
+    box-shadow:0 0 0 2px rgba(255,215,0,0.1), 0 0 20px rgba(255,215,0,0.1);
 }
 
 .form-group input::placeholder{
-    color:rgba(153,144,119,0.3);
+    color:rgba(255,215,0,0.2);
 }
 
 .submit-btn{
     width:100%;
     padding:16px;
-    background:rgba(255,215,0,0.2);
-    color:var(--signal-gold);
-    border:1px solid rgba(255,215,0,0.4);
-    border-radius:8px;
+    background:var(--kzn-yellow);
+    color:var(--kzn-black);
+    border:none;
+    border-radius:0;
     font-family:'Space Grotesk',sans-serif;
     font-size:0.875rem;
-    font-weight:600;
-    letter-spacing:0.1em;
+    font-weight:700;
+    letter-spacing:0.15em;
     text-transform:uppercase;
     cursor:pointer;
     transition:all .3s;
@@ -713,29 +813,25 @@ html,body{
 }
 
 .submit-btn:hover{
-    background:rgba(255,215,0,0.3);
-    box-shadow:0 0 30px rgba(255,215,0,0.2);
+    background:var(--kzn-yellow-bright);
+    box-shadow:0 4px 30px rgba(255,215,0,0.4);
+    transform:translateY(-1px);
 }
 
-/* === HORIZONTAL SCAN BAR === */
-.scan-bar{
+/* === BOTTOM TEXT (MANIFESTO STYLE) === */
+.bottom-manifesto{
     position:fixed;
-    left:0;
-    right:0;
-    height:2px;
-    background:linear-gradient(90deg,transparent,rgba(0,227,253,0.4),transparent);
-    z-index:7;
+    bottom:16px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.55rem;
+    color:rgba(255,215,0,0.2);
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    text-align:center;
     pointer-events:none;
-    opacity:0;
-    transition:opacity .2s;
-}
-.scan-bar.active{
-    opacity:1;
-    animation:scanMove 0.5s linear;
-}
-@keyframes scanMove{
-    0%{top:0%}
-    100%{top:100%}
 }
 
 /* === DEBUG === */
@@ -744,7 +840,7 @@ html,body{
     bottom:8px;
     right:8px;
     font-size:9px;
-    color:rgba(153,144,119,0.2);
+    color:rgba(255,215,0,0.15);
     z-index:100;
     font-family:'Share Tech Mono',monospace;
 }
@@ -752,120 +848,136 @@ html,body{
 </head>
 <body>
 
-<!-- TV Static (always active background) -->
+<!-- Pattern background -->
+<div class="pattern-bg"></div>
+
+<!-- TV Static -->
 <canvas id="static-canvas"></canvas>
 
-<!-- CRT effects -->
+<!-- Overlays -->
 <div class="scanlines"></div>
-<div class="crt-curve"></div>
-<div class="vignette"></div>
+<div class="crt-overlay"></div>
+
+<!-- Decorative frames -->
+<div class="deco-frame top-left"></div>
+<div class="deco-frame top-right"></div>
+<div class="deco-frame bottom-left"></div>
+<div class="deco-frame bottom-right"></div>
+
+<!-- SOOON watermark -->
+<div class="sooon-title">SOOON</div>
 
 <!-- Signal burst flash -->
 <div class="signal-burst" id="signalBurst"></div>
 
-<!-- Horizontal scan bar -->
+<!-- Scan bar -->
 <div class="scan-bar" id="scanBar"></div>
 
-<!-- Interference text -->
-<div class="interference-overlay" id="interferenceOverlay">
-    <div class="interference-text" id="interferenceText">АРБУЗ ДЕТЕКТЕД</div>
+<!-- Interference -->
+<div class="interference" id="interference">
+    <div class="interference-box">
+        <div class="interference-text" id="interferenceText">СИГНАЛ ОБНАРУЖЕН</div>
+    </div>
 </div>
 
-<!-- Signal Portal (center) -->
+<!-- Signal Portal -->
 <div class="signal-portal" id="signalPortal">
     <video id="portal-video" loop muted playsinline>
         <source src="signal-portal.mp4" type="video/mp4">
     </video>
     <div class="portal-placeholder" id="portalPlaceholder">
-        <div class="placeholder-glow"></div>
+        <div class="placeholder-core"></div>
     </div>
 </div>
 
-<!-- Analog Meters (left) -->
-<div class="meter-panel-left">
+<!-- Left meters -->
+<div class="meter-panel" id="meterPanel">
     <div class="meter">
         <div class="meter-label">SIG</div>
         <div class="meter-scale">
-            <div class="meter-bar" id="meter-signal" style="height:5%"></div>
-            <div class="meter-peak" id="meter-peak" style="bottom:5%"></div>
+            <div class="meter-bar" id="meterSignal" style="height:5%"></div>
+            <div class="meter-peak" id="meterPeak" style="bottom:5%"></div>
         </div>
     </div>
     <div class="meter">
         <div class="meter-label">NOISE</div>
         <div class="meter-scale">
-            <div class="meter-bar" id="meter-noise" style="height:80%;background:rgba(153,144,119,0.3)"></div>
+            <div class="meter-bar" id="meterNoise" style="height:85%;background:rgba(255,215,0,0.15)"></div>
         </div>
     </div>
 </div>
 
-<!-- Analog Dial (right) -->
-<div class="dial-panel-right">
+<!-- Right dial -->
+<div class="dial-panel" id="dialPanel">
     <div class="meter-label">FREQ</div>
-    <div class="dial-large">
+    <div class="dial-circle">
         <div class="dial-face">
             <div class="dial-ticks" id="dialTicks"></div>
             <div class="dial-needle" id="dialNeedle"></div>
-            <div class="dial-center"></div>
+            <div class="dial-center-dot"></div>
         </div>
     </div>
     <div class="dial-value" id="dialValue">87.5 MHz</div>
 </div>
 
-<!-- Oscilloscope (bottom) -->
+<!-- Oscilloscope -->
 <div class="oscilloscope" id="oscilloscope">
-    <div class="oscilloscope-label">WAVEFORM</div>
+    <div class="oscilloscope-header">WAVEFORM</div>
     <canvas id="oscilloscope-canvas"></canvas>
 </div>
 
-<!-- Compass (top center) -->
-<div class="compass-top" id="compassTop" style="opacity:0;transition:opacity 0.5s">
-    <div class="compass-mini">
-        <div class="compass-mini-ring"></div>
-        <div class="compass-mini-arrow" id="compassArrow"></div>
+<!-- Compass -->
+<div class="compass-area" id="compassArea" style="opacity:0;transition:opacity 0.5s">
+    <div class="compass-icon">
+        <div class="compass-ring"></div>
+        <div class="compass-arrow" id="compassArrow"></div>
     </div>
-    <div class="compass-readout" id="compassReadout">000°</div>
-</div>
-
-<!-- Status (top left) -->
-<div class="status-display" id="statusDisplay" style="opacity:0;transition:opacity 0.5s">
-    <div class="status-line">
-        <span class="status-label">STATUS</span>
-        <span class="status-value status-blink" id="statusValue">SCANNING</span>
-    </div>
-    <div class="status-line">
-        <span class="status-label">AZIMUTH</span>
-        <span class="status-value" id="statusAlpha">---</span>
-    </div>
-    <div class="status-line">
-        <span class="status-label">ELEV</span>
-        <span class="status-value" id="statusBeta">---</span>
-    </div>
-    <div class="status-line">
-        <span class="status-label">SIGNAL</span>
-        <span class="status-value" id="statusSignal">0%</span>
+    <div class="compass-info" id="compassInfo">
+        <div id="compassReadout">000°</div>
+        <div style="font-size:0.6rem;opacity:0.6">ПОВЕРНИ К ЮГУ</div>
     </div>
 </div>
 
-<!-- Lock Button -->
-<button class="lock-btn" id="lockBtn">Фиксировать</button>
+<!-- Status panel -->
+<div class="status-panel" id="statusPanel" style="opacity:0;transition:opacity 0.5s">
+    <div class="status-row">
+        <span class="status-key">STATUS</span>
+        <span class="status-val status-blink" id="statusValue">SCANNING</span>
+    </div>
+    <div class="status-row">
+        <span class="status-key">AZIMUTH</span>
+        <span class="status-val" id="statusAlpha">---</span>
+    </div>
+    <div class="status-row">
+        <span class="status-key">ELEV</span>
+        <span class="status-val" id="statusBeta">---</span>
+    </div>
+    <div class="status-row">
+        <span class="status-key">SIGNAL</span>
+        <span class="status-val" id="statusSignal">0%</span>
+    </div>
+</div>
 
-<!-- Start Screen -->
+<!-- Lock button -->
+<button class="lock-btn" id="lockBtn">ФИКСИРОВАТЬ</button>
+
+<!-- Start screen -->
 <div id="start-screen">
-    <div class="start-title">SIGNAL HUNT</div>
-    <div class="start-subtitle">KAZANTIP REPUBLIC // FREQUENCY SCANNER</div>
-    <button class="start-btn" id="startBtn">Инициализировать Сканер</button>
+    <div class="start-logo">SOOON</div>
+    <div class="start-tagline">SIGNAL HUNT // FREQUENCY SCANNER</div>
+    <button class="start-btn" id="startBtn">ИНИЦИАЛИЗИРОВАТЬ</button>
     <div class="start-hint">
         НАПРАВЬ ТЕЛЕФОН НА ЮГ<br>
         ПОДНИМИ К НЕБУ — К ЛУНЕ<br>
-        ИЩИ КРИСТАЛЛ В ШУМЕ
+        <span style="opacity:0.5">ИЩИ КРИСТАЛЛ В ШУМЕ</span>
     </div>
 </div>
 
 <!-- Stage 2: Form -->
 <div id="stage2">
-    <div class="form-container">
-        <div class="form-title">Вступить в Республику</div>
-        <div class="form-subtitle">Оставь координаты для получения Визы</div>
+    <div class="form-box">
+        <div class="form-title">ВСТУПИТЬ В РЕСПУБЛИКУ</div>
+        <div class="form-subtitle">ОСТАВЬ КООРДИНАТЫ ДЛЯ ВИЗЫ</div>
         <form id="entryForm">
             <div class="form-group">
                 <label>Instagram</label>
@@ -879,15 +991,20 @@ html,body{
                 <label>Email</label>
                 <input type="email" id="email" placeholder="signal@example.com" required>
             </div>
-            <button type="submit" class="submit-btn">Начать Ритуал</button>
+            <button type="submit" class="submit-btn">НАЧАТЬ РИТУАЛ</button>
         </form>
     </div>
+</div>
+
+<!-- Manifesto text -->
+<div class="bottom-manifesto">
+    HAVE A NICE TRIP // A MANIFESTO OF SUN, MUSIC, FREEDOM
 </div>
 
 <div id="dbg"></div>
 
 <script>
-// === TV STATIC (ALWAYS RUNNING) ===
+// === TV STATIC ===
 const staticCanvas = document.getElementById('static-canvas');
 const staticCtx = staticCanvas.getContext('2d');
 
@@ -898,7 +1015,7 @@ function resizeStatic(){
 window.addEventListener('resize', resizeStatic);
 resizeStatic();
 
-let staticIntensity = 1.0; // 1.0 = full noise, 0.0 = clear signal
+let staticIntensity = 1.0;
 
 function drawStatic(){
     const w = staticCanvas.width;
@@ -906,22 +1023,21 @@ function drawStatic(){
     const idata = staticCtx.createImageData(w, h);
     const buffer = new Uint32Array(idata.data.buffer);
     
-    // Create noise with varying intensity
     for(let i = 0; i < buffer.length; i++){
         const noise = Math.random();
-        // More intense noise in center area (portal zone) when signal is weak
         const x = (i % w) / w;
         const y = Math.floor(i / w) / h;
         const distFromCenter = Math.sqrt((x-0.5)**2 + (y-0.5)**2);
         
-        // Portal area has less noise when signal is strong
         let portalFactor = 1;
         if(distFromCenter < 0.25){
             portalFactor = staticIntensity;
         }
         
         const v = Math.floor(noise * 255 * portalFactor);
-        buffer[i] = (255 << 24) | (v << 16) | (v << 8) | v;
+        // Slightly yellow-tinted noise
+        const yellowTint = Math.floor(v * 0.9);
+        buffer[i] = (255 << 24) | (yellowTint << 16) | (yellowTint << 8) | v;
     }
     
     staticCtx.putImageData(idata, 0, 0);
@@ -956,15 +1072,15 @@ function drawOscilloscope(){
     const w = oscCanvas.width;
     const h = oscCanvas.height;
     
-    oscCtx.fillStyle = 'rgba(0,0,0,0.15)';
+    oscCtx.fillStyle = 'rgba(20,20,20,0.2)';
     oscCtx.fillRect(0, 0, w, h);
     
     const time = Date.now() / 1000;
     const amplitude = signalStrength / 100;
     const noise = (1 - amplitude);
     
-    // Draw grid
-    oscCtx.strokeStyle = 'rgba(153,144,119,0.08)';
+    // Grid
+    oscCtx.strokeStyle = 'rgba(255,215,0,0.06)';
     oscCtx.lineWidth = 0.5;
     for(let x = 0; x < w; x += 20){
         oscCtx.beginPath();
@@ -979,23 +1095,19 @@ function drawOscilloscope(){
         oscCtx.stroke();
     }
     
-    // Draw signal wave
-    oscCtx.strokeStyle = signalStrength > 80 ? 'rgba(0,227,253,0.7)' : 
-                         signalStrength > 50 ? 'rgba(255,215,0,0.6)' : 'rgba(153,144,119,0.3)';
+    // Wave
+    oscCtx.strokeStyle = signalStrength > 80 ? 'rgba(255,215,0,0.8)' : 
+                         signalStrength > 50 ? 'rgba(255,215,0,0.5)' : 'rgba(255,215,0,0.2)';
     oscCtx.lineWidth = 1.5;
+    oscCtx.shadowBlur = signalStrength > 80 ? 10 : 0;
+    oscCtx.shadowColor = 'rgba(255,215,0,0.5)';
     oscCtx.beginPath();
     
     for(let x = 0; x < w; x++){
         const normalizedX = x / w;
-        
-        // Signal wave
         const wave1 = Math.sin(normalizedX * 15 + time * 8) * amplitude * h * 0.35;
         const wave2 = Math.sin(normalizedX * 8 + time * 3) * amplitude * h * 0.15;
-        
-        // Noise
         const staticNoise = (Math.random() - 0.5) * noise * h * 0.5;
-        
-        // Occasional signal burst (clear wave)
         const burst = signalStrength > 70 && Math.sin(time * 10) > 0.8 ? 
                       Math.sin(normalizedX * 20 + time * 15) * h * 0.2 : 0;
         
@@ -1006,6 +1118,7 @@ function drawOscilloscope(){
     }
     
     oscCtx.stroke();
+    oscCtx.shadowBlur = 0;
     requestAnimationFrame(drawOscilloscope);
 }
 drawOscilloscope();
@@ -1025,40 +1138,42 @@ let inHotZone = false;
 let hotZoneTimer = null;
 
 const interferenceMessages = [
-    "АРБУЗ ДЕТЕКТЕД",
-    "ГОРБУШКА 1999",
-    "РЕСПУБЛИКА ОНЛАЙН",
-    "КРИСТАЛЛ ВОССТАНОВЛЕН",
-    "DREEMZ TRANSMISSION",
-    "ВИЗА ОДОБРЕНА",
-    "СИГНАЛ ИЗ ПОПОВКИ",
-    "КИСЛОВОДСК КОННЕКТ",
-    "КВАНТОВЫЙ АРБУЗ"
+    "СИГНАЛ ОБНАРУЖЕН",
+    "ЧАСТОТА БЛИЗКО",
+    "ПРИБЛИЖАЕМСЯ",
+    "КРИСТАЛЛ РЯДОМ",
+    "ВИБРАЦИЯ УСИЛЕНА",
+    "ПОРТАЛ ОТКРЫВАЕТСЯ",
+    "ДРУГАЯ РЕАЛЬНОСТЬ",
+    "СКАНИРОВАНИЕ...",
+    "HAVE A NICE TRIP"
 ];
 
-// Elements
 const startScreen = document.getElementById('start-screen');
 const startBtn = document.getElementById('startBtn');
 const signalPortal = document.getElementById('signalPortal');
 const portalVideo = document.getElementById('portal-video');
 const portalPlaceholder = document.getElementById('portalPlaceholder');
 const lockBtn = document.getElementById('lockBtn');
-const statusDisplay = document.getElementById('statusDisplay');
+const statusPanel = document.getElementById('statusPanel');
 const statusValue = document.getElementById('statusValue');
 const statusAlpha = document.getElementById('statusAlpha');
 const statusBeta = document.getElementById('statusBeta');
 const statusSignal = document.getElementById('statusSignal');
-const meterSignal = document.getElementById('meter-signal');
-const meterPeak = document.getElementById('meter-peak');
+const meterSignal = document.getElementById('meterSignal');
+const meterPeak = document.getElementById('meterPeak');
 const dialNeedle = document.getElementById('dialNeedle');
 const dialValue = document.getElementById('dialValue');
 const compassArrow = document.getElementById('compassArrow');
 const compassReadout = document.getElementById('compassReadout');
-const compassTop = document.getElementById('compassTop');
+const compassInfo = document.getElementById('compassInfo');
+const compassArea = document.getElementById('compassArea');
 const signalBurst = document.getElementById('signalBurst');
-const interferenceOverlay = document.getElementById('interferenceOverlay');
+const interference = document.getElementById('interference');
 const interferenceText = document.getElementById('interferenceText');
 const scanBar = document.getElementById('scanBar');
+const meterPanel = document.getElementById('meterPanel');
+const dialPanel = document.getElementById('dialPanel');
 const oscilloscope = document.getElementById('oscilloscope');
 const dbg = document.getElementById('dbg');
 
@@ -1072,63 +1187,50 @@ function updateSignalStrength(){
     const betaProximity = Math.max(0, 1 - betaDiff / BETA_TOLERANCE);
     
     targetSignalStrength = Math.min(alphaProximity, betaProximity) * 100;
-    
-    // Smooth transition
     signalStrength += (targetSignalStrength - signalStrength) * 0.1;
-    
-    // Update static intensity (less noise when signal is strong)
     staticIntensity = 1 - (signalStrength / 100) * 0.7;
     
     updateUI();
     
-    // Random signal bursts
     if(signalStrength > 30 && signalStrength < 80 && Math.random() < 0.02){
         showSignalBurst();
     }
     
-    // Interference when not in hot zone
     if(signalStrength < 40 && Math.random() < 0.025){
         showInterference();
     }
 }
 
 function updateUI(){
-    // Status
     statusAlpha.innerText = Math.round(currentAlpha) + '°';
     statusBeta.innerText = Math.round(currentBeta) + '°';
     statusSignal.innerText = Math.round(signalStrength) + '%';
     
-    // Compass
     compassArrow.style.transform = `translate(-50%,-100%) rotate(${currentAlpha}deg)`;
     compassReadout.innerText = Math.round(currentAlpha).toString().padStart(3, '0') + '°';
     
-    // Dial
     const dialRotation = (signalStrength / 100) * 270 - 135;
     dialNeedle.style.transform = `translate(-50%,-100%) rotate(${dialRotation}deg)`;
     dialValue.innerText = (87.5 + signalStrength * 0.15).toFixed(1) + ' MHz';
     
-    // Signal meter
     meterSignal.style.height = signalStrength + '%';
     if(signalStrength > parseFloat(meterPeak.style.bottom)){
         meterPeak.style.bottom = signalStrength + '%';
     }
-    // Decay peak
     setTimeout(() => {
         meterPeak.style.bottom = Math.max(5, signalStrength) + '%';
     }, 300);
     
-    // Portal state
     if(signalStrength > 90){
         statusValue.innerText = 'LOCKING';
-        statusValue.className = 'status-value locking';
+        statusValue.className = 'status-val locking';
         signalPortal.className = 'signal-portal active locking';
         portalVideo.classList.add('active');
         portalPlaceholder.classList.add('hidden');
         dialValue.classList.add('hot');
         compassArrow.classList.add('hot');
-        compassReadout.classList.add('hot');
+        compassInfo.classList.add('hot');
         
-        // Show video glitch
         if(Math.random() < 0.05){
             portalVideo.classList.add('glitching');
             setTimeout(() => portalVideo.classList.remove('glitching'), 150);
@@ -1143,15 +1245,14 @@ function updateUI(){
         }
     } else if(signalStrength > 50){
         statusValue.innerText = 'NEAR';
-        statusValue.className = 'status-value hot';
+        statusValue.className = 'status-val hot';
         signalPortal.className = 'signal-portal active';
         portalVideo.classList.remove('active');
         portalPlaceholder.classList.remove('hidden');
         dialValue.classList.remove('hot');
         compassArrow.classList.remove('hot');
-        compassReadout.classList.remove('hot');
+        compassInfo.classList.remove('hot');
         
-        // Show brief video flashes
         if(Math.random() < 0.03){
             portalVideo.classList.add('active');
             setTimeout(() => portalVideo.classList.remove('active'), 100);
@@ -1162,13 +1263,13 @@ function updateUI(){
         clearTimeout(hotZoneTimer);
     } else {
         statusValue.innerText = 'SCANNING';
-        statusValue.className = 'status-value status-blink';
+        statusValue.className = 'status-val status-blink';
         signalPortal.className = 'signal-portal';
         portalVideo.classList.remove('active');
         portalPlaceholder.classList.remove('hidden');
         dialValue.classList.remove('hot');
         compassArrow.classList.remove('hot');
-        compassReadout.classList.remove('hot');
+        compassInfo.classList.remove('hot');
         
         inHotZone = false;
         lockBtn.classList.remove('visible');
@@ -1178,8 +1279,6 @@ function updateUI(){
 
 function showSignalBurst(){
     signalBurst.classList.add('active');
-    
-    // Brief clear signal in center
     staticIntensity = 0.2;
     
     setTimeout(() => {
@@ -1191,12 +1290,11 @@ function showSignalBurst(){
 function showInterference(){
     const msg = interferenceMessages[Math.floor(Math.random() * interferenceMessages.length)];
     interferenceText.innerText = msg;
-    interferenceOverlay.classList.add('active');
-    
+    interference.classList.add('active');
     scanBar.classList.add('active');
     
     setTimeout(() => {
-        interferenceOverlay.classList.remove('active');
+        interference.classList.remove('active');
         scanBar.classList.remove('active');
     }, 150 + Math.random() * 200);
 }
@@ -1212,7 +1310,6 @@ function lockSignal(){
     portalPlaceholder.classList.add('hidden');
     staticIntensity = 0.1;
     
-    // Strong glitch
     portalVideo.classList.add('glitching');
     setTimeout(() => portalVideo.classList.remove('glitching'), 800);
     
@@ -1230,8 +1327,10 @@ lockBtn.addEventListener('click', lockSignal);
 startBtn.addEventListener('click', () => {
     startScreen.classList.add('hidden');
     gameActive = true;
-    statusDisplay.style.opacity = '1';
-    compassTop.style.opacity = '1';
+    statusPanel.style.opacity = '1';
+    compassArea.style.opacity = '1';
+    meterPanel.style.opacity = '1';
+    dialPanel.style.opacity = '1';
     oscilloscope.style.opacity = '1';
     
     if(typeof DeviceOrientationEvent !== 'undefined'){
@@ -1251,7 +1350,6 @@ startBtn.addEventListener('click', () => {
 
 function handleOrientation(e){
     if(e.alpha !== null) currentAlpha = e.alpha;
-    // Phone UP = high beta (pointing to sky/moon)
     if(e.beta !== null) currentBeta = Math.max(0, 180 - Math.abs(e.beta));
     if(e.gamma !== null) currentBeta = Math.max(currentBeta, Math.abs(e.gamma));
     
@@ -1308,8 +1406,8 @@ document.getElementById('entryForm').addEventListener('submit', (e) => {
 // === TITLE FLICKER ===
 setInterval(() => {
     if(Math.random() > 0.95){
-        document.querySelector('.start-title').style.opacity = 0.3;
-        setTimeout(() => document.querySelector('.start-title').style.opacity = 1, 50);
+        document.querySelector('.start-logo').style.opacity = 0.3;
+        setTimeout(() => document.querySelector('.start-logo').style.opacity = 1, 50);
     }
 }, 100);
 </script>
