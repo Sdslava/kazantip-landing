@@ -21,9 +21,8 @@
     --kzn-black:#0A0A0A;
     --kzn-black-light:#141414;
     --kzn-gray:#2A2A2A;
-    --kzn-surface:#111111;
     --signal-cyan:#00E3FD;
-    --ui-dim:rgba(255,215,0,0.4);
+    --ui-dim:rgba(255,215,0,0.5);
     --ui-bright:#FFD700;
 }
 
@@ -39,26 +38,14 @@ html,body{
     -webkit-font-smoothing:antialiased;
 }
 
-/* === KZNTP PATTERN BACKGROUND === */
-.pattern-bg{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    background:var(--kzn-black);
-    opacity:0.08;
-    background-image:
-        repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,215,0,0.03) 35px, rgba(255,215,0,0.03) 70px),
-        repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,215,0,0.02) 35px, rgba(255,215,0,0.02) 70px);
-}
-
-/* === TV STATIC (GRAINY) === */
+/* === GRAINY STATIC (SOFTER) === */
 #static-canvas{
     position:fixed;
     inset:0;
     z-index:1;
     width:100%;
     height:100%;
-    opacity:0.9;
+    opacity:0.5;
 }
 
 /* === SCANLINES === */
@@ -70,60 +57,142 @@ html,body{
     background:repeating-linear-gradient(
         0deg,
         transparent,
-        transparent 2px,
-        rgba(0,0,0,0.15) 2px,
-        rgba(0,0,0,0.15) 4px
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 6px
     );
-    opacity:0.5;
+    opacity:0.4;
 }
 
-/* === CRT CURVE + VIGNETTE === */
+/* === CRT VIGNETTE === */
 .crt-overlay{
     position:fixed;
     inset:0;
     z-index:3;
     pointer-events:none;
-    background:
-        radial-gradient(ellipse 100% 100% at 50% 50%, transparent 60%, rgba(0,0,0,0.6) 100%),
-        radial-gradient(ellipse 90% 90% at 50% 50%, transparent 40%, rgba(0,0,0,0.8) 100%);
+    background:radial-gradient(
+        ellipse 100% 100% at 50% 50%,
+        transparent 50%,
+        rgba(0,0,0,0.5) 100%
+    );
 }
 
-/* === SIGNAL PORTAL (SOFT, BLEEDING) === */
-.signal-portal{
+/* === DECORATIVE FRAMES (STRONGER) === */
+.deco-frame{
+    position:fixed;
+    z-index:10;
+    pointer-events:none;
+}
+
+.deco-frame.top-left{
+    top:24px;
+    left:24px;
+    width:80px;
+    height:80px;
+    border-left:3px solid var(--kzn-yellow);
+    border-top:3px solid var(--kzn-yellow);
+    opacity:0.8;
+}
+
+.deco-frame.top-right{
+    top:24px;
+    right:24px;
+    width:80px;
+    height:80px;
+    border-right:3px solid var(--kzn-yellow);
+    border-top:3px solid var(--kzn-yellow);
+    opacity:0.8;
+}
+
+.deco-frame.bottom-left{
+    bottom:24px;
+    left:24px;
+    width:80px;
+    height:80px;
+    border-left:3px solid var(--kzn-yellow);
+    border-bottom:3px solid var(--kzn-yellow);
+    opacity:0.8;
+}
+
+.deco-frame.bottom-right{
+    bottom:24px;
+    right:24px;
+    width:80px;
+    height:80px;
+    border-right:3px solid var(--kzn-yellow);
+    border-bottom:3px solid var(--kzn-yellow);
+    opacity:0.8;
+}
+
+/* === SOOON WATERMARK === */
+.sooon-watermark{
     position:fixed;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:280px;
-    height:360px;
+    z-index:4;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(5rem,18vw,12rem);
+    font-weight:800;
+    letter-spacing:-0.04em;
+    color:rgba(255,215,0,0.08);
+    text-transform:uppercase;
+    pointer-events:none;
+    white-space:nowrap;
+    user-select:none;
+}
+
+/* === SIGNAL PORTAL (CENTER, PROMINENT) === */
+.signal-portal{
+    position:fixed;
+    top:45%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:300px;
+    height:380px;
     z-index:5;
     border-radius:50%;
     overflow:hidden;
+    box-shadow:0 0 60px rgba(255,215,0,0.1), inset 0 0 40px rgba(0,0,0,0.5);
     transition:all 0.8s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* Glow that bleeds into noise */
+/* Outer glow bleed */
 .signal-portal::before{
     content:'';
     position:absolute;
-    inset:-60px;
+    inset:-80px;
     border-radius:50%;
     background:radial-gradient(
         ellipse 50% 50% at 50% 50%,
-        rgba(255,215,0,0.2) 0%,
-        rgba(255,215,0,0.05) 40%,
+        rgba(255,215,0,0.25) 0%,
+        rgba(255,215,0,0.08) 40%,
         transparent 70%
     );
     opacity:0;
     transition:opacity 0.8s;
     pointer-events:none;
-    filter:blur(30px);
+    filter:blur(40px);
 }
 .signal-portal.active::before{
     opacity:1;
 }
 
-/* Inner video */
+/* Inner bright ring */
+.signal-portal::after{
+    content:'';
+    position:absolute;
+    inset:-4px;
+    border-radius:50%;
+    border:2px solid rgba(255,215,0,0);
+    transition:all 0.6s;
+    pointer-events:none;
+}
+.signal-portal.active::after{
+    border-color:rgba(255,215,0,0.4);
+    box-shadow:0 0 30px rgba(255,215,0,0.3), inset 0 0 30px rgba(255,215,0,0.1);
+}
+
 #portal-video{
     position:absolute;
     inset:0;
@@ -149,7 +218,7 @@ html,body{
     100%{transform:translate(0) scale(1);filter:contrast(1.3) saturate(1.2)}
 }
 
-/* Placeholder - yellow glow */
+/* Placeholder */
 .portal-placeholder{
     position:absolute;
     inset:0;
@@ -163,18 +232,18 @@ html,body{
 }
 
 .placeholder-core{
-    width:100px;
-    height:100px;
+    width:120px;
+    height:120px;
     border-radius:50%;
-    background:radial-gradient(circle, rgba(255,215,0,0.4), transparent 70%);
+    background:radial-gradient(circle, rgba(255,215,0,0.5), transparent 70%);
     animation:corePulse 2s infinite;
 }
 @keyframes corePulse{
     0%,100%{transform:scale(1);opacity:0.4}
-    50%{transform:scale(1.5);opacity:0.9}
+    50%{transform:scale(1.6);opacity:1}
 }
 
-/* === SIGNAL BURST FLASH === */
+/* === SIGNAL BURST === */
 .signal-burst{
     position:fixed;
     inset:0;
@@ -183,10 +252,10 @@ html,body{
     opacity:0;
     transition:opacity 0.05s;
     background:radial-gradient(
-        ellipse 60% 70% at 50% 50%,
-        rgba(255,215,0,0.8) 0%,
-        rgba(255,215,0,0.2) 30%,
-        transparent 60%
+        ellipse 50% 60% at 50% 45%,
+        rgba(255,215,0,0.9) 0%,
+        rgba(255,215,0,0.3) 25%,
+        transparent 55%
     );
     mix-blend-mode:screen;
 }
@@ -194,362 +263,25 @@ html,body{
     opacity:1;
 }
 
-/* === DECORATIVE FRAMES (KZNTP STYLE) === */
-.deco-frame{
-    position:fixed;
-    z-index:10;
-    pointer-events:none;
-}
-
-.deco-frame.top-left{
-    top:20px;
-    left:20px;
-    width:60px;
-    height:60px;
-    border-left:2px solid var(--kzn-yellow);
-    border-top:2px solid var(--kzn-yellow);
-    opacity:0.6;
-}
-
-.deco-frame.top-right{
-    top:20px;
-    right:20px;
-    width:60px;
-    height:60px;
-    border-right:2px solid var(--kzn-yellow);
-    border-top:2px solid var(--kzn-yellow);
-    opacity:0.6;
-}
-
-.deco-frame.bottom-left{
-    bottom:20px;
-    left:20px;
-    width:60px;
-    height:60px;
-    border-left:2px solid var(--kzn-yellow);
-    border-bottom:2px solid var(--kzn-yellow);
-    opacity:0.6;
-}
-
-.deco-frame.bottom-right{
-    bottom:20px;
-    right:20px;
-    width:60px;
-    height:60px;
-    border-right:2px solid var(--kzn-yellow);
-    border-bottom:2px solid var(--kzn-yellow);
-    opacity:0.6;
-}
-
-/* === SOOON TITLE (LARGE, BEHIND NOISE) === */
-.sooon-title{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    z-index:4;
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(4rem,15vw,10rem);
-    font-weight:800;
-    letter-spacing:-0.05em;
-    color:rgba(255,215,0,0.06);
-    text-transform:uppercase;
-    pointer-events:none;
-    white-space:nowrap;
-}
-
-/* === ANALOG METERS (LEFT) === */
-.meter-panel{
-    position:fixed;
-    left:20px;
-    top:50%;
-    transform:translateY(-50%);
-    z-index:20;
-    display:flex;
-    flex-direction:column;
-    gap:24px;
-}
-
-.meter{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-}
-
-.meter-label{
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.6rem;
-    color:var(--ui-dim);
-    letter-spacing:0.15em;
-    text-transform:uppercase;
-}
-
-.meter-scale{
-    width:36px;
-    height:140px;
-    background:rgba(20,20,20,0.8);
-    border:1px solid rgba(255,215,0,0.2);
-    border-radius:4px;
-    position:relative;
-    overflow:hidden;
-}
-
-.meter-bar{
-    position:absolute;
-    bottom:0;
-    left:3px;
-    right:3px;
-    background:linear-gradient(to top,
-        var(--kzn-yellow),
-        rgba(255,215,0,0.6),
-        rgba(255,100,50,0.7)
-    );
-    border-radius:2px;
-    transition:height 0.15s;
-    min-height:2px;
-}
-
-.meter-peak{
-    position:absolute;
-    left:0;
-    right:0;
-    height:2px;
-    background:rgba(255,100,50,0.8);
-    box-shadow:0 0 4px rgba(255,100,50,0.5);
-    transition:bottom 0.3s;
-}
-
-/* === ANALOG DIAL (RIGHT) === */
-.dial-panel{
-    position:fixed;
-    right:20px;
-    top:50%;
-    transform:translateY(-50%);
-    z-index:20;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-}
-
-.dial-circle{
-    width:90px;
-    height:90px;
-    position:relative;
-}
-
-.dial-face{
-    width:100%;
-    height:100%;
-    border-radius:50%;
-    background:rgba(20,20,20,0.8);
-    border:2px solid rgba(255,215,0,0.25);
-    position:relative;
-    box-shadow:0 0 20px rgba(255,215,0,0.1);
-}
-
-.dial-needle{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:2px;
-    height:38px;
-    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,215,0,0.3));
-    transform-origin:bottom center;
-    transform:translate(-50%,-100%) rotate(-135deg);
-    transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
-    border-radius:1px;
-}
-
-.dial-center-dot{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:8px;
-    height:8px;
-    background:var(--kzn-yellow);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    box-shadow:0 0 10px rgba(255,215,0,0.5);
-}
-
-.dial-ticks{
-    position:absolute;
-    inset:6px;
-}
-
-.dial-tick{
-    position:absolute;
-    top:0;
-    left:50%;
-    width:1px;
-    height:5px;
-    background:rgba(255,215,0,0.3);
-    transform-origin:center 36px;
-}
-
-.dial-value{
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.7rem;
-    color:var(--ui-dim);
-    letter-spacing:0.05em;
-}
-.dial-value.hot{color:var(--kzn-yellow);text-shadow:0 0 8px rgba(255,215,0,0.3)}
-
-/* === OSCILLOSCOPE (BOTTOM) === */
-.oscilloscope{
-    position:fixed;
-    bottom:110px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:20;
-    width:260px;
-    height:75px;
-    background:rgba(20,20,20,0.8);
-    border:1px solid rgba(255,215,0,0.15);
-    border-radius:8px;
-    overflow:hidden;
-    box-shadow:0 4px 20px rgba(0,0,0,0.5);
-}
-
-.oscilloscope-header{
-    position:absolute;
-    top:3px;
-    right:8px;
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.5rem;
-    color:rgba(255,215,0,0.3);
-    letter-spacing:0.1em;
-}
-
-#oscilloscope-canvas{
-    width:100%;
-    height:100%;
-}
-
-/* === COMPASS (TOP CENTER) === */
-.compass-area{
-    position:fixed;
-    top:28px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:20;
-    display:flex;
-    align-items:center;
-    gap:20px;
-    background:rgba(10,10,10,0.6);
-    padding:10px 24px;
-    border-radius:12px;
-    border:1px solid rgba(255,215,0,0.15);
-    backdrop-filter:blur(10px);
-}
-
-.compass-icon{
-    width:44px;
-    height:44px;
-    position:relative;
-}
-
-.compass-ring{
-    position:absolute;
-    inset:0;
-    border:1.5px solid rgba(255,215,0,0.3);
-    border-radius:50%;
-}
-
-.compass-arrow{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:2px;
-    height:16px;
-    background:var(--ui-dim);
-    transform-origin:bottom center;
-    transform:translate(-50%,-100%) rotate(0deg);
-    transition:all .3s;
-}
-.compass-arrow.hot{
-    background:var(--kzn-yellow);
-    box-shadow:0 0 8px rgba(255,215,0,0.6);
-}
-
-.compass-arrow::after{
-    content:'';
-    position:absolute;
-    top:-5px;
-    left:50%;
-    transform:translateX(-50%);
-    border-left:4px solid transparent;
-    border-right:4px solid transparent;
-    border-bottom:6px solid var(--ui-dim);
-}
-.compass-arrow.hot::after{
-    border-bottom-color:var(--kzn-yellow);
-}
-
-.compass-info{
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.75rem;
-    color:var(--ui-dim);
-    letter-spacing:0.05em;
-    line-height:1.5;
-}
-.compass-info.hot{color:var(--kzn-yellow)}
-
-/* === STATUS (TOP LEFT, INSIDE FRAME) === */
-.status-panel{
-    position:fixed;
-    top:32px;
-    left:32px;
-    z-index:20;
-    font-family:'Share Tech Mono',monospace;
-    font-size:0.65rem;
-    color:var(--ui-dim);
-    letter-spacing:0.1em;
-    line-height:1.8;
-}
-
-.status-row{
-    display:flex;
-    gap:10px;
-}
-
-.status-key{
-    color:rgba(255,215,0,0.3);
-    min-width:65px;
-}
-
-.status-val{
-    color:var(--kzn-yellow-dim);
-}
-.status-val.hot{color:var(--kzn-yellow);text-shadow:0 0 6px rgba(255,215,0,0.3)}
-.status-val.locking{color:var(--signal-cyan);text-shadow:0 0 6px rgba(0,227,253,0.3)}
-
-.status-blink{
-    animation:blink 1s infinite;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-
 /* === SCAN BAR === */
 .scan-bar{
     position:fixed;
     left:0;
     right:0;
-    height:2px;
+    height:3px;
     background:linear-gradient(90deg,transparent,var(--kzn-yellow),transparent);
     z-index:7;
     pointer-events:none;
     opacity:0;
-    box-shadow:0 0 10px var(--kzn-yellow);
+    box-shadow:0 0 15px var(--kzn-yellow);
 }
 .scan-bar.active{
-    opacity:0.6;
-    animation:scanMove 0.6s linear;
+    opacity:0.7;
+    animation:scanMove 0.5s linear;
 }
 @keyframes scanMove{0%{top:0%}100%{top:100%}}
 
-/* === INTERFERENCE OVERLAY === */
+/* === INTERFERENCE === */
 .interference{
     position:fixed;
     inset:0;
@@ -566,20 +298,20 @@ html,body{
 }
 
 .interference-box{
-    padding:16px 32px;
-    background:rgba(10,10,10,0.9);
-    border:1.5px solid var(--kzn-yellow);
-    box-shadow:0 0 30px rgba(255,215,0,0.2), inset 0 0 20px rgba(255,215,0,0.05);
+    padding:20px 40px;
+    background:rgba(10,10,10,0.95);
+    border:2px solid var(--kzn-yellow);
+    box-shadow:0 0 40px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.05);
 }
 
 .interference-text{
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.9rem;
+    font-size:1rem;
     font-weight:700;
     color:var(--kzn-yellow);
-    letter-spacing:0.25em;
+    letter-spacing:0.3em;
     text-transform:uppercase;
-    text-shadow:0 0 15px rgba(255,215,0,0.5);
+    text-shadow:0 0 20px rgba(255,215,0,0.5);
     animation:textGlitch 0.08s infinite;
 }
 @keyframes textGlitch{
@@ -588,6 +320,284 @@ html,body{
     50%{opacity:0.9;transform:translate(1px,-1px)}
     75%{opacity:0.6;transform:translate(-1px,-1px)}
 }
+
+/* === LEFT METERS (BIGGER) === */
+.meter-panel{
+    position:fixed;
+    left:24px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+}
+
+.meter{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+}
+
+.meter-label{
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.65rem;
+    color:var(--ui-dim);
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+}
+
+.meter-scale{
+    width:40px;
+    height:160px;
+    background:rgba(20,20,20,0.7);
+    border:2px solid rgba(255,215,0,0.25);
+    border-radius:4px;
+    position:relative;
+    overflow:hidden;
+    box-shadow:inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.meter-bar{
+    position:absolute;
+    bottom:0;
+    left:4px;
+    right:4px;
+    background:linear-gradient(to top,
+        var(--kzn-yellow),
+        rgba(255,215,0,0.7),
+        rgba(255,100,50,0.8)
+    );
+    border-radius:2px;
+    transition:height 0.15s;
+    min-height:2px;
+    box-shadow:0 0 10px rgba(255,215,0,0.3);
+}
+
+.meter-peak{
+    position:absolute;
+    left:0;
+    right:0;
+    height:2px;
+    background:rgba(255,100,50,0.9);
+    box-shadow:0 0 6px rgba(255,100,50,0.6);
+    transition:bottom 0.3s;
+}
+
+/* === RIGHT DIAL (BIGGER) === */
+.dial-panel{
+    position:fixed;
+    right:24px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+}
+
+.dial-circle{
+    width:100px;
+    height:100px;
+    position:relative;
+}
+
+.dial-face{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    background:rgba(20,20,20,0.7);
+    border:2px solid rgba(255,215,0,0.3);
+    position:relative;
+    box-shadow:0 0 25px rgba(255,215,0,0.15), inset 0 0 15px rgba(0,0,0,0.3);
+}
+
+.dial-needle{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:3px;
+    height:42px;
+    background:linear-gradient(to top, var(--kzn-yellow), rgba(255,215,0,0.3));
+    transform-origin:bottom center;
+    transform:translate(-50%,-100%) rotate(-135deg);
+    transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    border-radius:1px;
+    box-shadow:0 0 8px rgba(255,215,0,0.4);
+}
+
+.dial-center-dot{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:10px;
+    height:10px;
+    background:var(--kzn-yellow);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 12px rgba(255,215,0,0.6);
+}
+
+.dial-ticks{
+    position:absolute;
+    inset:8px;
+}
+
+.dial-tick{
+    position:absolute;
+    top:0;
+    left:50%;
+    width:1.5px;
+    height:6px;
+    background:rgba(255,215,0,0.4);
+    transform-origin:center 40px;
+}
+
+.dial-value{
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.75rem;
+    color:var(--ui-dim);
+    letter-spacing:0.05em;
+}
+.dial-value.hot{color:var(--kzn-yellow);text-shadow:0 0 10px rgba(255,215,0,0.4)}
+
+/* === OSCILLOSCOPE (BIGGER, PROMINENT) === */
+.oscilloscope{
+    position:fixed;
+    bottom:120px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    width:280px;
+    height:85px;
+    background:rgba(20,20,20,0.7);
+    border:2px solid rgba(255,215,0,0.2);
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 4px 25px rgba(0,0,0,0.5), inset 0 0 15px rgba(0,0,0,0.3);
+}
+
+.oscilloscope-header{
+    position:absolute;
+    top:4px;
+    right:10px;
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.55rem;
+    color:rgba(255,215,0,0.3);
+    letter-spacing:0.1em;
+}
+
+#oscilloscope-canvas{
+    width:100%;
+    height:100%;
+}
+
+/* === SIMPLIFIED COMPASS (TOP CENTER) === */
+.compass-area{
+    position:fixed;
+    top:32px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:rgba(10,10,10,0.7);
+    padding:12px 28px;
+    border-radius:12px;
+    border:2px solid rgba(255,215,0,0.2);
+    backdrop-filter:blur(10px);
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+
+.compass-icon{
+    width:48px;
+    height:48px;
+    position:relative;
+}
+
+.compass-ring{
+    position:absolute;
+    inset:0;
+    border:2px solid rgba(255,215,0,0.35);
+    border-radius:50%;
+}
+
+.compass-arrow{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:2.5px;
+    height:20px;
+    background:var(--ui-dim);
+    transform-origin:bottom center;
+    transform:translate(-50%,-100%) rotate(0deg);
+    transition:all .3s;
+}
+.compass-arrow.hot{
+    background:var(--kzn-yellow);
+    box-shadow:0 0 10px rgba(255,215,0,0.6);
+}
+
+.compass-arrow::after{
+    content:'';
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%);
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-bottom:8px solid var(--ui-dim);
+}
+.compass-arrow.hot::after{
+    border-bottom-color:var(--kzn-yellow);
+}
+
+.compass-info{
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.8rem;
+    color:var(--ui-dim);
+    letter-spacing:0.05em;
+    line-height:1.5;
+}
+.compass-info.hot{color:var(--kzn-yellow)}
+
+/* === STATUS PANEL (TOP LEFT) === */
+.status-panel{
+    position:fixed;
+    top:36px;
+    left:36px;
+    z-index:20;
+    font-family:'Share Tech Mono',monospace;
+    font-size:0.7rem;
+    color:var(--ui-dim);
+    letter-spacing:0.1em;
+    line-height:1.8;
+}
+
+.status-row{
+    display:flex;
+    gap:12px;
+}
+
+.status-key{
+    color:rgba(255,215,0,0.35);
+    min-width:70px;
+}
+
+.status-val{
+    color:var(--kzn-yellow-dim);
+    font-weight:600;
+}
+.status-val.hot{color:var(--kzn-yellow);text-shadow:0 0 8px rgba(255,215,0,0.3)}
+.status-val.locking{color:var(--signal-cyan);text-shadow:0 0 8px rgba(0,227,253,0.3)}
+
+.status-blink{
+    animation:blink 1s infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
 /* === START SCREEN === */
 #start-screen{
@@ -599,7 +609,7 @@ html,body{
     justify-content:center;
     z-index:30;
     transition:opacity 1s;
-    background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,215,0,0.05), transparent 70%);
+    background:radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,215,0,0.08), transparent 70%);
 }
 #start-screen.hidden{
     opacity:0;
@@ -608,17 +618,22 @@ html,body{
 
 .start-logo{
     font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(3rem,10vw,6rem);
+    font-size:clamp(3.5rem,12vw,7rem);
     font-weight:800;
     letter-spacing:-0.03em;
     color:var(--kzn-yellow);
-    text-shadow:0 0 60px rgba(255,215,0,0.3);
-    margin-bottom:8px;
+    text-shadow:0 0 80px rgba(255,215,0,0.4), 0 0 160px rgba(255,215,0,0.1);
+    margin-bottom:12px;
+    animation:logoPulse 3s infinite;
+}
+@keyframes logoPulse{
+    0%,100%{text-shadow:0 0 80px rgba(255,215,0,0.4)}
+    50%{text-shadow:0 0 100px rgba(255,215,0,0.6), 0 0 200px rgba(255,215,0,0.2)}
 }
 
 .start-tagline{
     font-family:'Share Tech Mono',monospace;
-    font-size:0.8rem;
+    font-size:0.85rem;
     color:rgba(255,215,0,0.5);
     letter-spacing:0.2em;
     text-transform:uppercase;
@@ -626,13 +641,13 @@ html,body{
 }
 
 .start-btn{
-    padding:18px 56px;
+    padding:20px 60px;
     background:transparent;
     color:var(--kzn-yellow);
     border:2px solid var(--kzn-yellow);
     border-radius:0;
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.9rem;
+    font-size:1rem;
     font-weight:600;
     letter-spacing:0.15em;
     text-transform:uppercase;
@@ -658,9 +673,9 @@ html,body{
 }
 
 .start-hint{
-    margin-top:32px;
+    margin-top:36px;
     font-family:'Share Tech Mono',monospace;
-    font-size:0.65rem;
+    font-size:0.7rem;
     color:rgba(255,215,0,0.4);
     letter-spacing:0.1em;
     text-align:center;
@@ -670,17 +685,17 @@ html,body{
 /* === LOCK BUTTON === */
 .lock-btn{
     position:fixed;
-    bottom:40px;
+    bottom:48px;
     left:50%;
     transform:translateX(-50%) translateY(20px);
-    padding:16px 48px;
+    padding:18px 56px;
     background:rgba(255,215,0,0.1);
     color:var(--kzn-yellow);
     border:2px solid var(--kzn-yellow);
     border-radius:0;
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.85rem;
-    font-weight:600;
+    font-size:0.9rem;
+    font-weight:700;
     letter-spacing:0.15em;
     text-transform:uppercase;
     cursor:pointer;
@@ -698,7 +713,7 @@ html,body{
 .lock-btn:hover{
     background:var(--kzn-yellow);
     color:var(--kzn-black);
-    box-shadow:0 0 40px rgba(255,215,0,0.4);
+    box-shadow:0 0 50px rgba(255,215,0,0.5);
 }
 
 /* === STAGE 2: FORM === */
@@ -726,16 +741,17 @@ html,body{
     max-width:420px;
     padding:48px;
     background:var(--kzn-black-light);
-    border:2px solid rgba(255,215,0,0.2);
+    border:2px solid rgba(255,215,0,0.25);
     position:relative;
+    box-shadow:0 8px 40px rgba(0,0,0,0.5);
 }
 
 .form-box::before{
     content:'';
     position:absolute;
     top:-2px;
-    left:30px;
-    right:30px;
+    left:40px;
+    right:40px;
     height:2px;
     background:var(--kzn-yellow);
 }
@@ -818,16 +834,16 @@ html,body{
     transform:translateY(-1px);
 }
 
-/* === BOTTOM TEXT (MANIFESTO STYLE) === */
+/* === BOTTOM MANIFESTO === */
 .bottom-manifesto{
     position:fixed;
-    bottom:16px;
+    bottom:20px;
     left:50%;
     transform:translateX(-50%);
     z-index:20;
     font-family:'Share Tech Mono',monospace;
-    font-size:0.55rem;
-    color:rgba(255,215,0,0.2);
+    font-size:0.6rem;
+    color:rgba(255,215,0,0.25);
     letter-spacing:0.2em;
     text-transform:uppercase;
     text-align:center;
@@ -848,39 +864,27 @@ html,body{
 </head>
 <body>
 
-<!-- Pattern background -->
 <div class="pattern-bg"></div>
-
-<!-- TV Static -->
 <canvas id="static-canvas"></canvas>
-
-<!-- Overlays -->
 <div class="scanlines"></div>
 <div class="crt-overlay"></div>
 
-<!-- Decorative frames -->
 <div class="deco-frame top-left"></div>
 <div class="deco-frame top-right"></div>
 <div class="deco-frame bottom-left"></div>
 <div class="deco-frame bottom-right"></div>
 
-<!-- SOOON watermark -->
-<div class="sooon-title">SOOON</div>
+<div class="sooon-watermark">SOOON</div>
 
-<!-- Signal burst flash -->
 <div class="signal-burst" id="signalBurst"></div>
-
-<!-- Scan bar -->
 <div class="scan-bar" id="scanBar"></div>
 
-<!-- Interference -->
 <div class="interference" id="interference">
     <div class="interference-box">
         <div class="interference-text" id="interferenceText">СИГНАЛ ОБНАРУЖЕН</div>
     </div>
 </div>
 
-<!-- Signal Portal -->
 <div class="signal-portal" id="signalPortal">
     <video id="portal-video" loop muted playsinline>
         <source src="signal-portal.mp4" type="video/mp4">
@@ -890,7 +894,6 @@ html,body{
     </div>
 </div>
 
-<!-- Left meters -->
 <div class="meter-panel" id="meterPanel">
     <div class="meter">
         <div class="meter-label">SIG</div>
@@ -907,7 +910,6 @@ html,body{
     </div>
 </div>
 
-<!-- Right dial -->
 <div class="dial-panel" id="dialPanel">
     <div class="meter-label">FREQ</div>
     <div class="dial-circle">
@@ -920,13 +922,11 @@ html,body{
     <div class="dial-value" id="dialValue">87.5 MHz</div>
 </div>
 
-<!-- Oscilloscope -->
 <div class="oscilloscope" id="oscilloscope">
     <div class="oscilloscope-header">WAVEFORM</div>
     <canvas id="oscilloscope-canvas"></canvas>
 </div>
 
-<!-- Compass -->
 <div class="compass-area" id="compassArea" style="opacity:0;transition:opacity 0.5s">
     <div class="compass-icon">
         <div class="compass-ring"></div>
@@ -934,11 +934,10 @@ html,body{
     </div>
     <div class="compass-info" id="compassInfo">
         <div id="compassReadout">000°</div>
-        <div style="font-size:0.6rem;opacity:0.6">ПОВЕРНИ К ЮГУ</div>
+        <div style="font-size:0.65rem;opacity:0.6;margin-top:2px">К ЛУНЕ →</div>
     </div>
 </div>
 
-<!-- Status panel -->
 <div class="status-panel" id="statusPanel" style="opacity:0;transition:opacity 0.5s">
     <div class="status-row">
         <span class="status-key">STATUS</span>
@@ -958,10 +957,8 @@ html,body{
     </div>
 </div>
 
-<!-- Lock button -->
 <button class="lock-btn" id="lockBtn">ФИКСИРОВАТЬ</button>
 
-<!-- Start screen -->
 <div id="start-screen">
     <div class="start-logo">SOOON</div>
     <div class="start-tagline">SIGNAL HUNT // FREQUENCY SCANNER</div>
@@ -973,7 +970,6 @@ html,body{
     </div>
 </div>
 
-<!-- Stage 2: Form -->
 <div id="stage2">
     <div class="form-box">
         <div class="form-title">ВСТУПИТЬ В РЕСПУБЛИКУ</div>
@@ -996,7 +992,6 @@ html,body{
     </div>
 </div>
 
-<!-- Manifesto text -->
 <div class="bottom-manifesto">
     HAVE A NICE TRIP // A MANIFESTO OF SUN, MUSIC, FREEDOM
 </div>
@@ -1004,7 +999,7 @@ html,body{
 <div id="dbg"></div>
 
 <script>
-// === TV STATIC ===
+// === TV STATIC (SOFTER) ===
 const staticCanvas = document.getElementById('static-canvas');
 const staticCtx = staticCanvas.getContext('2d');
 
@@ -1034,9 +1029,8 @@ function drawStatic(){
             portalFactor = staticIntensity;
         }
         
-        const v = Math.floor(noise * 255 * portalFactor);
-        // Slightly yellow-tinted noise
-        const yellowTint = Math.floor(v * 0.9);
+        const v = Math.floor(noise * 200 * portalFactor);
+        const yellowTint = Math.floor(v * 0.85);
         buffer[i] = (255 << 24) | (yellowTint << 16) | (yellowTint << 8) | v;
     }
     
@@ -1072,7 +1066,7 @@ function drawOscilloscope(){
     const w = oscCanvas.width;
     const h = oscCanvas.height;
     
-    oscCtx.fillStyle = 'rgba(20,20,20,0.2)';
+    oscCtx.fillStyle = 'rgba(20,20,20,0.15)';
     oscCtx.fillRect(0, 0, w, h);
     
     const time = Date.now() / 1000;
@@ -1096,11 +1090,11 @@ function drawOscilloscope(){
     }
     
     // Wave
-    oscCtx.strokeStyle = signalStrength > 80 ? 'rgba(255,215,0,0.8)' : 
-                         signalStrength > 50 ? 'rgba(255,215,0,0.5)' : 'rgba(255,215,0,0.2)';
-    oscCtx.lineWidth = 1.5;
-    oscCtx.shadowBlur = signalStrength > 80 ? 10 : 0;
-    oscCtx.shadowColor = 'rgba(255,215,0,0.5)';
+    oscCtx.strokeStyle = signalStrength > 80 ? 'rgba(255,215,0,0.9)' : 
+                         signalStrength > 50 ? 'rgba(255,215,0,0.6)' : 'rgba(255,215,0,0.25)';
+    oscCtx.lineWidth = 2;
+    oscCtx.shadowBlur = signalStrength > 80 ? 15 : 0;
+    oscCtx.shadowColor = 'rgba(255,215,0,0.6)';
     oscCtx.beginPath();
     
     for(let x = 0; x < w; x++){
@@ -1127,10 +1121,11 @@ drawOscilloscope();
 let signalLocked = false;
 let gameActive = false;
 
-const TARGET_ALPHA = 180;
-const TARGET_BETA = 70;
-const ALPHA_TOLERANCE = 40;
-const BETA_TOLERANCE = 25;
+// HIGHER zone (toward sky/stars) and WIDER tolerance
+const TARGET_ALPHA = 180;  // South
+const TARGET_BETA = 100;   // Higher elevation (phone more upward toward sky)
+const ALPHA_TOLERANCE = 60;  // Wider horizontal zone
+const BETA_TOLERANCE = 40;   // Wider vertical zone
 
 let currentAlpha = 0;
 let currentBeta = 0;
@@ -1350,6 +1345,7 @@ startBtn.addEventListener('click', () => {
 
 function handleOrientation(e){
     if(e.alpha !== null) currentAlpha = e.alpha;
+    // Phone UP toward sky = high beta
     if(e.beta !== null) currentBeta = Math.max(0, 180 - Math.abs(e.beta));
     if(e.gamma !== null) currentBeta = Math.max(currentBeta, Math.abs(e.gamma));
     
