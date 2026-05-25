@@ -9,14 +9,11 @@
 <meta property="og:description" content="Найди свою частоту. Вступи в Республику.">
 <meta property="og:type" content="website">
 
-<!-- Fonts: Space Grotesk + Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* === TOTALLITY FESTIVAL DESIGN SYSTEM === */
-/* Colors */
 :root{
     --surface:#121318;
     --surface-dim:#121318;
@@ -67,7 +64,34 @@ html,body{
     z-index:0;
 }
 
-/* Stars field */
+/* === STATIC / SNOW (TV NOISE) === */
+#tv-static{
+    position:fixed;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .3s;
+}
+#tv-static.active{opacity:0.15}
+
+/* === SCAN LINES === */
+.scanlines{
+    position:fixed;
+    inset:0;
+    z-index:3;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
+    );
+    opacity:0.3;
+}
+
+/* === STARS === */
 .stars{
     position:fixed;
     inset:0;
@@ -83,67 +107,41 @@ html,body{
     opacity:0;
     animation:twinkle 3s infinite ease-in-out;
 }
-@keyframes twinkle{
-    0%,100%{opacity:0}
-    50%{opacity:0.8}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:0.8}}
+
+/* === MOON === */
+.moon{
+    position:fixed;
+    top:15%;
+    right:20%;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--primary), rgba(255,246,223,0.3));
+    box-shadow:0 0 40px rgba(255,246,223,0.2),0 0 80px rgba(255,246,223,0.1);
+    z-index:1;
+    opacity:0.6;
+    transition:all 1s ease;
+}
+.moon.glow{
+    opacity:1;
+    box-shadow:0 0 60px rgba(255,246,223,0.5),0 0 120px rgba(255,246,223,0.3),0 0 200px rgba(255,246,223,0.1);
+    transform:scale(1.1);
 }
 
-/* === GLASSMORPHISM === */
-.glass{
-    background:rgba(52,52,58,0.25);
-    backdrop-filter:blur(20px);
-    -webkit-backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,0.08);
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 8px 32px rgba(0,0,0,0.3);
+/* === GLITCH OVERLAY === */
+.glitch-overlay{
+    position:fixed;
+    inset:0;
+    z-index:8;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .1s;
+    mix-blend-mode:screen;
 }
+.glitch-overlay.active{opacity:0.3}
 
-.glass-strong{
-    background:rgba(52,52,58,0.4);
-    backdrop-filter:blur(40px);
-    -webkit-backdrop-filter:blur(40px);
-    border:1px solid rgba(255,255,255,0.12);
-}
-
-/* === TYPOGRAPHY (Space Grotesk) === */
-.display-xl{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(3rem,10vw,6rem);
-    font-weight:700;
-    line-height:1.1;
-    letter-spacing:-0.04em;
-    color:var(--primary);
-    text-shadow:0 0 40px rgba(255,246,223,0.15),0 0 80px rgba(255,246,223,0.05);
-}
-
-.display-lg{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(2rem,6vw,3.5rem);
-    font-weight:600;
-    line-height:1.15;
-    letter-spacing:-0.02em;
-    color:var(--primary);
-}
-
-.label{
-    font-family:'Space Grotesk',sans-serif;
-    font-size:0.75rem;
-    font-weight:500;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:var(--on-surface-variant);
-}
-
-.body-lg{
-    font-family:'Inter',sans-serif;
-    font-size:1.125rem;
-    font-weight:400;
-    line-height:1.6;
-    color:var(--on-surface-variant);
-}
-
-/* === STAGE 1: SIGNAL DETECTION === */
+/* === MAIN UI === */
 #stage1{
     position:fixed;
     inset:0;
@@ -154,10 +152,7 @@ html,body{
     z-index:10;
     transition:opacity 1.2s cubic-bezier(0.4,0,0.2,1);
 }
-#stage1.hidden{
-    opacity:0;
-    pointer-events:none;
-}
+#stage1.hidden{opacity:0;pointer-events:none}
 
 .status-bar{
     position:fixed;
@@ -174,8 +169,14 @@ html,body{
     gap:8px;
     padding:8px 20px;
     border-radius:9999px;
-    background:rgba(255,246,223,0.08);
-    border:1px solid rgba(255,246,223,0.15);
+    background:rgba(255,246,223,0.05);
+    border:1px solid rgba(255,246,223,0.1);
+    transition:all .5s;
+}
+.status-pill.locking{
+    background:rgba(0,227,253,0.1);
+    border-color:rgba(0,227,253,0.3);
+    box-shadow:0 0 20px rgba(0,227,253,0.2);
 }
 
 .status-dot{
@@ -185,116 +186,250 @@ html,body{
     background:var(--outline);
     animation:statusPulse 2s infinite;
 }
-.status-dot.hot{background:var(--primary-container);box-shadow:0 0 8px var(--primary-container)}
-.status-dot.locked{background:var(--secondary-container);box-shadow:0 0 8px var(--secondary-container)}
+.status-dot.scanning{background:var(--primary-container);box-shadow:0 0 8px var(--primary-container)}
+.status-dot.near{background:#ff8c00;box-shadow:0 0 12px #ff8c00}
+.status-dot.locking{
+    background:var(--secondary-container);
+    box-shadow:0 0 16px var(--secondary-container);
+    animation:lockPulse 0.5s infinite;
+}
 @keyframes statusPulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes lockPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.3)}}
 
-/* === RADAR / SIGNAL VISUALIZER === */
-.radar-container{
-    position:relative;
-    width:320px;
-    height:320px;
-    margin:40px 0;
+.display-xl{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(2.5rem,8vw,4.5rem);
+    font-weight:700;
+    line-height:1.1;
+    letter-spacing:-0.04em;
+    color:var(--primary);
+    text-shadow:0 0 40px rgba(255,246,223,0.15);
+    margin-bottom:10px;
 }
 
-.radar-orbit{
+.label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.7rem;
+    font-weight:500;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--on-surface-variant);
+}
+
+/* === RADAR / SCANNER === */
+.scanner-container{
+    position:relative;
+    width:280px;
+    height:280px;
+    margin:30px 0;
+}
+
+.scanner-ring{
     position:absolute;
     inset:0;
-    border:1px solid rgba(153,144,119,0.15);
+    border:1px solid rgba(153,144,119,0.1);
     border-radius:50%;
 }
-.radar-orbit:nth-child(2){inset:40px;animation-delay:.5s}
-.radar-orbit:nth-child(3){inset:80px;animation-delay:1s}
-.radar-orbit:nth-child(4){inset:120px;animation-delay:1.5s}
+.scanner-ring:nth-child(2){inset:35px}
+.scanner-ring:nth-child(3){inset:70px}
 
-.radar-sweep{
+.scanner-sweep{
     position:absolute;
     inset:0;
     border-radius:50%;
     overflow:hidden;
 }
-.radar-sweep::after{
+.scanner-sweep::after{
     content:'';
     position:absolute;
     top:50%;
     left:50%;
     width:50%;
     height:1px;
-    background:linear-gradient(90deg,rgba(0,227,253,0.6),transparent);
+    background:linear-gradient(90deg,rgba(0,227,253,0.5),transparent);
     transform-origin:left center;
-    animation:sweep 4s linear infinite;
+    animation:sweep 3s linear infinite;
 }
 @keyframes sweep{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
-/* Signal core */
+/* === SIGNAL CORE (ELLIPSE PORTAL) === */
 .signal-core{
     position:absolute;
     inset:50%;
-    width:60px;
-    height:60px;
-    margin:-30px;
+    width:120px;
+    height:160px;
+    margin:-60px -80px;
     border-radius:50%;
-    background:radial-gradient(circle,rgba(255,246,223,0.2) 0%,transparent 70%);
+    overflow:hidden;
+    background:rgba(0,0,0,0.6);
+    border:1px solid rgba(255,246,223,0.1);
+    transition:all .5s ease;
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:all .4s ease;
 }
-.signal-core.hot{
-    background:radial-gradient(circle,rgba(255,215,0,0.4) 0%,transparent 70%);
-    box-shadow:0 0 30px rgba(255,215,0,0.3),0 0 60px rgba(255,215,0,0.1);
+
+/* Ellipse mask for video */
+.signal-core.ellipse{
+    border-radius:50%;
+    box-shadow:0 0 30px rgba(255,246,223,0.1),inset 0 0 30px rgba(0,0,0,0.5);
 }
+
+.signal-core.locking{
+    border-color:rgba(0,227,253,0.5);
+    box-shadow:0 0 40px rgba(0,227,253,0.3),0 0 80px rgba(0,227,253,0.1),inset 0 0 40px rgba(0,0,0,0.5);
+    transform:scale(1.3);
+}
+
 .signal-core.locked{
-    background:radial-gradient(circle,rgba(0,227,253,0.5) 0%,transparent 70%);
-    box-shadow:0 0 40px rgba(0,227,253,0.4),0 0 80px rgba(0,227,253,0.2);
+    border-color:rgba(0,227,253,0.8);
+    box-shadow:0 0 60px rgba(0,227,253,0.5),0 0 120px rgba(0,227,253,0.2),inset 0 0 40px rgba(0,0,0,0.5);
+    transform:scale(1.5);
+    animation:portalBreath 3s ease-in-out infinite;
+}
+@keyframes portalBreath{0%,100%{box-shadow:0 0 60px rgba(0,227,253,0.5)}50%{box-shadow:0 0 80px rgba(0,227,253,0.7)}}
+
+/* Video inside ellipse */
+#portalVideo{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    opacity:0;
+    transition:opacity 1s;
+    filter:contrast(1.2) saturate(1.3);
+}
+#portalVideo.active{opacity:1}
+
+/* Glitch effect on video */
+#portalVideo.glitching{
+    animation:videoGlitch 0.2s infinite;
+}
+@keyframes videoGlitch{
+    0%{transform:translate(0)}20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(1px,-2px)}100%{transform:translate(0)}
 }
 
 .freq-value{
     font-family:'Space Grotesk',sans-serif;
-    font-size:2.5rem;
+    font-size:1.8rem;
     font-weight:700;
     color:var(--on-surface-variant);
-    transition:color .3s;
+    transition:all .3s;
+    z-index:5;
 }
-.freq-value.hot{color:var(--primary);text-shadow:0 0 20px rgba(255,246,223,.3)}
-.freq-value.locked{color:var(--secondary-container);text-shadow:0 0 20px rgba(0,227,253,.4)}
+.freq-value.near{color:var(--primary);text-shadow:0 0 20px rgba(255,246,223,.3)}
+.freq-value.locking{color:var(--secondary-container);text-shadow:0 0 30px rgba(0,227,253,.5)}
 
-/* === PROGRESS RING === */
-.progress-ring{
-    position:absolute;
-    inset:0;
-    transform:rotate(-90deg);
-}
-.progress-ring circle{
-    fill:none;
-    stroke-width:2;
-    transition:stroke-dashoffset .3s ease;
-}
-.progress-ring .bg{stroke:rgba(153,144,119,0.1)}
-.progress-ring .fill{stroke:var(--secondary-container);stroke-linecap:round}
-.progress-ring .fill.hot{stroke:var(--primary-container)}
-.progress-ring .fill.locked{stroke:var(--secondary-container)}
-
-/* === ZONE INDICATOR === */
-.zone-indicator{
-    margin-top:20px;
+/* === SCANNER READOUT === */
+.scanner-readout{
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
     text-align:center;
+    font-family:'Space Grotesk',monospace;
+    font-size:0.75rem;
+    color:var(--outline);
+    letter-spacing:0.1em;
+    opacity:0.7;
 }
-.zone-label{
+
+.readout-line{
+    margin:3px 0;
+}
+
+.readout-value{
+    color:var(--on-surface-variant);
+}
+.readout-value.hot{color:var(--primary-container)}
+.readout-value.locking{color:var(--secondary-container)}
+
+/* === INTERFERENCE (OTHER UNIVERSES) === */
+.interference{
+    position:fixed;
+    inset:0;
+    z-index:15;
+    pointer-events:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    transition:opacity .2s;
+}
+.interference.active{opacity:1}
+
+.interference-text{
     font-family:'Space Grotesk',sans-serif;
-    font-size:0.875rem;
-    font-weight:500;
+    font-size:0.8rem;
+    color:var(--primary-container);
+    text-shadow:0 0 10px rgba(255,215,0,0.5);
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    text-align:center;
+    animation:interferenceFlicker 0.1s infinite;
+    max-width:80%;
+}
+@keyframes interferenceFlicker{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* === DIRECTION ARROW === */
+.compass{
+    position:fixed;
+    bottom:180px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:20;
+    text-align:center;
+    transition:all .5s;
+}
+
+.compass-ring{
+    width:80px;
+    height:80px;
+    border:1px solid rgba(153,144,119,0.2);
+    border-radius:50%;
+    position:relative;
+    margin:0 auto 10px;
+}
+
+.compass-arrow{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:2px;
+    height:30px;
+    background:var(--outline);
+    transform-origin:bottom center;
+    transform:translate(-50%,-100%) rotate(0deg);
+    transition:all .3s;
+}
+.compass-arrow::after{
+    content:'';
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%);
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-bottom:8px solid var(--outline);
+}
+.compass-arrow.hot{
+    background:var(--primary-container);
+}
+.compass-arrow.hot::after{
+    border-bottom-color:var(--primary-container);
+}
+
+.compass-label{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:0.65rem;
     letter-spacing:0.15em;
     text-transform:uppercase;
     color:var(--outline);
-    transition:color .3s;
 }
-.zone-label.hot{color:var(--primary-container);text-shadow:0 0 10px rgba(255,215,0,.3)}
-.zone-label.locked{color:var(--secondary-container);text-shadow:0 0 10px rgba(0,227,253,.3)}
 
 /* === START BUTTON === */
 .start-btn{
-    margin-top:48px;
+    margin-top:40px;
     padding:16px 48px;
     background:transparent;
     color:var(--primary);
@@ -310,20 +445,10 @@ html,body{
     position:relative;
     overflow:hidden;
 }
-.start-btn::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:linear-gradient(135deg,rgba(255,246,223,0.1),transparent);
-    opacity:0;
-    transition:opacity .3s;
-}
 .start-btn:hover{
     border-color:rgba(255,246,223,0.6);
-    box-shadow:0 0 30px rgba(255,246,223,0.1),inset 0 0 20px rgba(255,246,223,0.05);
+    box-shadow:0 0 30px rgba(255,246,223,0.1);
 }
-.start-btn:hover::before{opacity:1}
-.start-btn:active{transform:scale(.98)}
 
 /* === LOCK BUTTON === */
 .lock-btn{
@@ -353,24 +478,6 @@ html,body{
     pointer-events:auto;
     transform:translateX(-50%) translateY(0);
 }
-.lock-btn:hover{
-    box-shadow:0 4px 30px rgba(255,215,0,0.5),0 0 60px rgba(255,215,0,0.2);
-    transform:translateX(-50%) translateY(0) scale(1.02);
-}
-
-/* === INSTRUCTION === */
-.instruction{
-    position:fixed;
-    bottom:120px;
-    width:100%;
-    text-align:center;
-    font-family:'Inter',sans-serif;
-    font-size:0.875rem;
-    color:var(--outline);
-    opacity:.6;
-    transition:opacity .3s;
-    z-index:20;
-}
 
 /* === STAGE 2: FORM === */
 #stage2{
@@ -387,6 +494,13 @@ html,body{
     padding:20px;
 }
 #stage2.active{opacity:1;pointer-events:auto}
+
+.glass-strong{
+    background:rgba(52,52,58,0.4);
+    backdrop-filter:blur(40px);
+    -webkit-backdrop-filter:blur(40px);
+    border:1px solid rgba(255,255,255,0.12);
+}
 
 .form-container{
     width:100%;
@@ -472,113 +586,152 @@ html,body{
     transform:translateY(-1px);
 }
 
-/* === NOISE OVERLAY === */
+/* === NOISE === */
 .noise{
     position:fixed;
     inset:0;
-    z-index:2;
+    z-index:4;
     pointer-events:none;
-    opacity:.04;
+    opacity:.03;
     mix-blend-mode:overlay;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* === HINT FOR MOBILE === */
-.mobile-hint{
+/* === SIGNAL BARS (TV STYLE) === */
+.signal-bars{
     position:fixed;
-    bottom:160px;
-    width:100%;
-    text-align:center;
-    font-size:0.75rem;
-    color:var(--outline);
-    opacity:.4;
+    top:50%;
+    right:20px;
+    transform:translateY(-50%);
     z-index:20;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:4px;
 }
 
-/* === ANIMATIONS === */
-@keyframes fadeInUp{
-    from{opacity:0;transform:translateY(30px)}
-    to{opacity:1;transform:translateY(0)}
+.signal-bar{
+    width:4px;
+    background:rgba(153,144,119,0.2);
+    border-radius:2px;
+    transition:all .3s;
+}
+.signal-bar.active{
+    background:var(--secondary-container);
+    box-shadow:0 0 6px rgba(0,227,253,0.5);
+}
+.signal-bar.hot{
+    background:var(--primary-container);
+    box-shadow:0 0 6px rgba(255,215,0,0.5);
 }
 
-.animate-in{
-    animation:fadeInUp .8s cubic-bezier(0.4,0,0.2,1) forwards;
+/* === HORIZONTAL SCAN LINE === */
+.scan-line{
+    position:fixed;
+    left:0;
+    right:0;
+    height:2px;
+    background:linear-gradient(90deg,transparent,rgba(0,227,253,0.3),transparent);
+    z-index:7;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .2s;
 }
+.scan-line.active{opacity:1}
 
-.delay-1{animation-delay:.1s;opacity:0}
-.delay-2{animation-delay:.2s;opacity:0}
-.delay-3{animation-delay:.3s;opacity:0}
-
-/* === DEBUG (hidden by default) === */
+/* === DEBUG === */
 #dbg{
     position:fixed;
     bottom:10px;
     right:10px;
-    font-size:10px;
-    color:#444;
+    font-size:9px;
+    color:rgba(153,144,119,0.4);
     z-index:100;
-    opacity:0;
-    pointer-events:none;
+    font-family:monospace;
+    text-align:right;
+    line-height:1.4;
 }
 </style>
 </head>
 <body>
 
-<!-- Celestial Background -->
 <div class="celestial-bg"></div>
-
-<!-- Stars -->
 <div class="stars" id="stars"></div>
-
-<!-- Noise -->
+<div class="moon" id="moon"></div>
+<div class="scanlines"></div>
 <div class="noise"></div>
+
+<canvas id="tv-static"></canvas>
+
+<div class="glitch-overlay" id="glitchOverlay"></div>
+<div class="scan-line" id="scanLine"></div>
+
+<!-- Interference from other universes -->
+<div class="interference" id="interference">
+    <div class="interference-text" id="interferenceText">СИГНАЛ ИЗ ДРУГОЙ ВСЕЛЕННОЙ</div>
+</div>
 
 <!-- STAGE 1: Signal Detection -->
 <div id="stage1">
     
+    <div class="scanner-readout" id="scannerReadout">
+        <div class="readout-line">AZIMUTH: <span class="readout-value" id="readoutAlpha">---</span>°</div>
+        <div class="readout-line">ELEVATION: <span class="readout-value" id="readoutBeta">---</span>°</div>
+        <div class="readout-line">SIGNAL: <span class="readout-value" id="readoutSignal">SCANNING</span></div>
+    </div>
+    
     <div class="status-bar">
-        <div class="status-pill">
+        <div class="status-pill" id="statusPill">
             <div class="status-dot" id="statusDot"></div>
             <span class="label" id="statusText">ОЖИДАНИЕ СИГНАЛА</span>
         </div>
     </div>
     
-    <div class="display-xl animate-in delay-1" id="mainTitle">SOOON</div>
+    <div class="display-xl" id="mainTitle">SOOON</div>
     
-    <div id="setup" class="animate-in delay-2">
+    <div id="setup">
         <button class="start-btn" id="startBtn">Поймать Сигнал</button>
+        <div style="margin-top:12px;font-size:0.65rem;color:var(--outline);letter-spacing:0.1em;opacity:0.5">НАПРАВЬ ТЕЛЕФОН НА ЮГ, К ЛУНЕ</div>
     </div>
     
-    <div id="gameUI" style="display:none;flex-direction:column;align-items:center">
-        <div class="radar-container">
-            <!-- Progress ring -->
-            <svg class="progress-ring" viewBox="0 0 320 320">
-                <circle class="bg" cx="160" cy="160" r="150" stroke-dasharray="942.5" stroke-dashoffset="0"></circle>
-                <circle class="fill" id="progressFill" cx="160" cy="160" r="150" 
-                    stroke-dasharray="942.5" stroke-dashoffset="942.5"></circle>
-            </svg>
+    <div id="gameUI" style="display:none;flex-direction:column;align-items:center;width:100%">
+        
+        <div class="scanner-container">
+            <div class="scanner-ring"></div>
+            <div class="scanner-ring"></div>
+            <div class="scanner-ring"></div>
+            <div class="scanner-sweep"></div>
             
-            <div class="radar-orbit"></div>
-            <div class="radar-orbit"></div>
-            <div class="radar-orbit"></div>
-            <div class="radar-orbit"></div>
-            <div class="radar-sweep"></div>
-            <div class="signal-core" id="signalCore">
+            <div class="signal-core ellipse" id="signalCore">
+                <video id="portalVideo" loop muted playsinline poster="">
+                    <source src="signal-portal.mp4" type="video/mp4">
+                </video>
                 <div class="freq-value" id="freqDisplay">0%</div>
             </div>
         </div>
         
-        <div class="zone-indicator">
-            <div class="zone-label" id="zoneText">Сканирование...</div>
+        <!-- Signal bars -->
+        <div class="signal-bars" id="signalBars">
+            <div class="signal-bar" style="height:8px"></div>
+            <div class="signal-bar" style="height:16px"></div>
+            <div class="signal-bar" style="height:24px"></div>
+            <div class="signal-bar" style="height:32px"></div>
+            <div class="signal-bar" style="height:40px"></div>
         </div>
         
-        <div class="mobile-hint" id="mobileHint">Свайпай вверх / вниз для настройки частоты</div>
+        <!-- Compass -->
+        <div class="compass" id="compass">
+            <div class="compass-ring">
+                <div class="compass-arrow" id="compassArrow"></div>
+            </div>
+            <div class="compass-label" id="compassLabel">ПОВЕРНИ К ЮГУ</div>
+        </div>
         
         <button class="lock-btn" id="lockBtn">Фиксировать Сигнал</button>
     </div>
 </div>
 
-<!-- STAGE 2: Entry Form -->
+<!-- STAGE 2: Form -->
 <div id="stage2">
     <div class="form-container glass-strong">
         <div class="form-title">Вступить в Республику</div>
@@ -617,76 +770,206 @@ for(let i = 0; i < 60; i++){
     starsContainer.appendChild(star);
 }
 
+// === TV STATIC CANVAS ===
+const staticCanvas = document.getElementById('tv-static');
+const staticCtx = staticCanvas.getContext('2d');
+
+function resizeStatic(){
+    staticCanvas.width = window.innerWidth;
+    staticCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeStatic);
+resizeStatic();
+
+function drawStatic(){
+    const idata = staticCtx.createImageData(staticCanvas.width, staticCanvas.height);
+    const buffer = new Uint32Array(idata.data.buffer);
+    for(let i = 0; i < buffer.length; i++){
+        const v = Math.random() * 255;
+        buffer[i] = (255 << 24) | (v << 16) | (v << 8) | v;
+    }
+    staticCtx.putImageData(idata, 0, 0);
+    if(staticCanvas.classList.contains('active')){
+        requestAnimationFrame(drawStatic);
+    }
+}
+
 // === GAME STATE ===
-let currentFreq = 0;
-let targetFreq = 85;
+let signalLocked = false;
+let gameActive = false;
+
+// Target: South (alpha ~180°), elevation ~60-80° (beta)
+// Moon is at top-right, so we need to point there
+const TARGET_ALPHA = 180; // South
+const TARGET_BETA = 70;   // Elevation to moon
+const ALPHA_TOLERANCE = 40; // ±40°
+const BETA_TOLERANCE = 25;  // ±25°
+
+let currentAlpha = 0;
+let currentBeta = 0;
+let signalStrength = 0;
 let inHotZone = false;
 let hotZoneTimer = null;
-let signalLocked = false;
+
+// Interference messages from "other universes"
+const interferenceMessages = [
+    "СИГНАЛ ИЗ ДРУГОЙ ВСЕЛЕННОЙ",
+    "ЧАСТОТА ПРИШЕЛЬЦЕВ",
+    "ПАРАЛЛЕЛЬНЫЙ МИР",
+    "НЕЗНАКОМАЯ ГАЛАКТИКА",
+    "ВРЕМЕННОЙ РАЗРЫВ",
+    "КВАНТОВЫЙ ШУМ",
+    "СИГНАЛ 1978",
+    "ДРЕМЗ ДЕТЕКТЕД"
+];
 
 const startBtn = document.getElementById('startBtn');
 const setup = document.getElementById('setup');
 const gameUI = document.getElementById('gameUI');
 const freqDisplay = document.getElementById('freqDisplay');
-const progressFill = document.getElementById('progressFill');
-const zoneText = document.getElementById('zoneText');
-const lockBtn = document.getElementById('lockBtn');
 const statusText = document.getElementById('statusText');
 const statusDot = document.getElementById('statusDot');
+const statusPill = document.getElementById('statusPill');
 const signalCore = document.getElementById('signalCore');
-const mainTitle = document.getElementById('mainTitle');
+const portalVideo = document.getElementById('portalVideo');
+const lockBtn = document.getElementById('lockBtn');
+const moon = document.getElementById('moon');
+const interference = document.getElementById('interference');
+const interferenceText = document.getElementById('interferenceText');
+const scannerReadout = document.getElementById('scannerReadout');
+const readoutAlpha = document.getElementById('readoutAlpha');
+const readoutBeta = document.getElementById('readoutBeta');
+const readoutSignal = document.getElementById('readoutSignal');
+const compassArrow = document.getElementById('compassArrow');
+const compassLabel = document.getElementById('compassLabel');
+const signalBars = document.querySelectorAll('.signal-bar');
+const scanLine = document.getElementById('scanLine');
+const glitchOverlay = document.getElementById('glitchOverlay');
+const dbg = document.getElementById('dbg');
 
-function updateDisplay(){
-    freqDisplay.innerText = Math.round(currentFreq) + '%';
+function updateSignalStrength(){
+    // Calculate distance from target
+    let alphaDiff = Math.abs(currentAlpha - TARGET_ALPHA);
+    if(alphaDiff > 180) alphaDiff = 360 - alphaDiff; // Wrap around
     
-    // Progress ring (942.5 is circumference)
-    const circumference = 942.5;
-    const offset = circumference - (currentFreq / 100) * circumference;
-    progressFill.style.strokeDashoffset = offset;
+    const betaDiff = Math.abs(currentBeta - TARGET_BETA);
     
-    const dist = Math.abs(currentFreq - targetFreq);
-    const proximity = Math.max(0, 1 - dist / 30);
+    // Signal strength based on both angles
+    const alphaProximity = Math.max(0, 1 - alphaDiff / ALPHA_TOLERANCE);
+    const betaProximity = Math.max(0, 1 - betaDiff / BETA_TOLERANCE);
     
-    // Visual states
-    if(proximity > 0.8){
-        zoneText.innerText = 'СИГНАЛ НАЙДЕН';
-        zoneText.className = 'zone-label locked';
-        signalCore.className = 'signal-core locked';
-        freqDisplay.className = 'freq-value locked';
-        progressFill.className.baseVal = 'fill locked';
-        statusText.innerText = 'ЧАСТОТА СОВПАДАЕТ';
-        statusDot.className = 'status-dot locked';
-        document.getElementById('mobileHint').style.opacity = '0';
-    } else if(proximity > 0.5){
-        zoneText.innerText = 'ПРИБЛИЖЕНИЕ...';
-        zoneText.className = 'zone-label hot';
-        signalCore.className = 'signal-core hot';
-        freqDisplay.className = 'freq-value hot';
-        progressFill.className.baseVal = 'fill hot';
-        statusText.innerText = 'ГОРЯЧАЯ ЗОНА';
-        statusDot.className = 'status-dot hot';
-    } else {
-        zoneText.innerText = 'Сканирование...';
-        zoneText.className = 'zone-label';
-        signalCore.className = 'signal-core';
-        freqDisplay.className = 'freq-value';
-        progressFill.className.baseVal = 'fill';
-        statusText.innerText = 'ПОИСК ЧАСТОТЫ';
-        statusDot.className = 'status-dot';
+    // Combined signal (need both to be good)
+    signalStrength = Math.min(alphaProximity, betaProximity) * 100;
+    
+    // Update UI
+    updateUI(alphaDiff, betaDiff);
+    
+    // Random interference when not in hot zone
+    if(signalStrength < 50 && Math.random() < 0.03){
+        showInterference();
     }
+}
+
+function updateUI(alphaDiff, betaDiff){
+    freqDisplay.innerText = Math.round(signalStrength) + '%';
     
-    // Auto-lock
-    if(proximity > 0.8 && !inHotZone && !signalLocked){
-        inHotZone = true;
-        lockBtn.classList.add('visible');
-        hotZoneTimer = setTimeout(()=>{
-            if(!signalLocked) lockSignal();
-        }, 3000);
-    } else if(proximity <= 0.8 && inHotZone){
+    readoutAlpha.innerText = Math.round(currentAlpha);
+    readoutBeta.innerText = Math.round(currentBeta);
+    
+    // Update compass arrow
+    const arrowRotation = currentAlpha;
+    compassArrow.style.transform = `translate(-50%,-100%) rotate(${arrowRotation}deg)`;
+    
+    // Signal bars
+    const activeBars = Math.floor(signalStrength / 20);
+    signalBars.forEach((bar, i) => {
+        bar.className = 'signal-bar';
+        if(i < activeBars){
+            if(signalStrength > 80) bar.classList.add('hot');
+            else bar.classList.add('active');
+        }
+    });
+    
+    // State machine
+    if(signalStrength > 90){
+        // LOCKING
+        statusText.innerText = 'СИГНАЛ НАЙДЕН';
+        statusDot.className = 'status-dot locking';
+        statusPill.className = 'status-pill locking';
+        freqDisplay.className = 'freq-value locking';
+        readoutSignal.innerText = 'LOCKING';
+        readoutSignal.className = 'readout-value locking';
+        signalCore.className = 'signal-core ellipse locking';
+        compassArrow.classList.add('hot');
+        compassLabel.innerText = 'СИГНАЛ У ЛУНЫ';
+        moon.classList.add('glow');
+        portalVideo.classList.add('active');
+        
+        if(!inHotZone && !signalLocked){
+            inHotZone = true;
+            lockBtn.classList.add('visible');
+            hotZoneTimer = setTimeout(() => {
+                if(!signalLocked) lockSignal();
+            }, 3000);
+        }
+    } else if(signalStrength > 50){
+        // NEAR
+        statusText.innerText = 'ПРИБЛИЖЕНИЕ...';
+        statusDot.className = 'status-dot near';
+        statusPill.className = 'status-pill';
+        freqDisplay.className = 'freq-value near';
+        readoutSignal.innerText = 'NEAR';
+        readoutSignal.className = 'readout-value hot';
+        signalCore.className = 'signal-core ellipse';
+        compassArrow.classList.add('hot');
+        compassLabel.innerText = 'ТЕПЛЕЕ...';
+        moon.classList.remove('glow');
+        portalVideo.classList.remove('active');
+        
+        inHotZone = false;
+        lockBtn.classList.remove('visible');
+        clearTimeout(hotZoneTimer);
+    } else {
+        // SCANNING
+        statusText.innerText = 'ПОИСК ЧАСТОТЫ';
+        statusDot.className = 'status-dot scanning';
+        statusPill.className = 'status-pill';
+        freqDisplay.className = 'freq-value';
+        readoutSignal.innerText = 'SCANNING';
+        readoutSignal.className = 'readout-value';
+        signalCore.className = 'signal-core ellipse';
+        compassArrow.classList.remove('hot');
+        compassLabel.innerText = 'ПОВЕРНИ К ЮГУ';
+        moon.classList.remove('glow');
+        portalVideo.classList.remove('active');
+        
         inHotZone = false;
         lockBtn.classList.remove('visible');
         clearTimeout(hotZoneTimer);
     }
+}
+
+function showInterference(){
+    const msg = interferenceMessages[Math.floor(Math.random() * interferenceMessages.length)];
+    interferenceText.innerText = msg;
+    interference.classList.add('active');
+    
+    // Glitch effects
+    glitchOverlay.style.background = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.1)`;
+    glitchOverlay.classList.add('active');
+    staticCanvas.classList.add('active');
+    drawStatic();
+    
+    // Scan line
+    scanLine.style.top = Math.random() * 100 + '%';
+    scanLine.classList.add('active');
+    
+    setTimeout(() => {
+        interference.classList.remove('active');
+        glitchOverlay.classList.remove('active');
+        staticCanvas.classList.remove('active');
+        scanLine.classList.remove('active');
+    }, 200 + Math.random() * 300);
 }
 
 function lockSignal(){
@@ -695,106 +978,99 @@ function lockSignal(){
     clearTimeout(hotZoneTimer);
     
     statusText.innerText = 'СИГНАЛ ПОЙМАН';
-    zoneText.innerText = 'LOCKED';
+    readoutSignal.innerText = 'LOCKED';
     freqDisplay.innerText = 'LOCK';
+    
+    signalCore.className = 'signal-core ellipse locked';
+    portalVideo.classList.add('active');
+    
+    // Glitch the video slightly (from other universe)
+    portalVideo.classList.add('glitching');
+    setTimeout(() => portalVideo.classList.remove('glitching'), 500);
     
     if(navigator.vibrate) navigator.vibrate([100,50,100,50,200,100,300]);
     
-    setTimeout(()=>{
+    setTimeout(() => {
         document.getElementById('stage1').classList.add('hidden');
         document.getElementById('stage2').classList.add('active');
-    }, 1500);
+    }, 2000);
 }
 
 lockBtn.addEventListener('click', lockSignal);
 
-// === CONTROLS ===
-let isDragging = false;
-let startY = 0;
-let startFreq = 0;
-
-startBtn.addEventListener('click', ()=>{
+// === GYROSCOPE ===
+startBtn.addEventListener('click', () => {
     setup.style.display = 'none';
     gameUI.style.display = 'flex';
+    gameActive = true;
     statusText.innerText = 'ПОИСК ЧАСТОТЫ';
+    scannerReadout.style.opacity = '1';
     
-    // Try gyroscope
+    // Activate static noise
+    staticCanvas.classList.add('active');
+    drawStatic();
+    
     if(typeof DeviceOrientationEvent !== 'undefined'){
         if(typeof DeviceOrientationEvent.requestPermission === 'function'){
-            DeviceOrientationEvent.requestPermission().then(response=>{
+            DeviceOrientationEvent.requestPermission().then(response => {
                 if(response === 'granted'){
-                    window.addEventListener('deviceorientation', (e)=>{
-                        if(e.beta !== null && e.beta !== undefined){
-                            currentFreq = Math.max(0, Math.min(100, (Math.abs(e.beta) / 180) * 100));
-                            updateDisplay();
-                        }
-                    });
+                    window.addEventListener('deviceorientation', handleOrientation);
                 }
-            }).catch(()=>{});
+            }).catch(() => {});
         } else {
-            window.addEventListener('deviceorientation', (e)=>{
-                if(e.beta !== null && e.beta !== undefined){
-                    currentFreq = Math.max(0, Math.min(100, (Math.abs(e.beta) / 180) * 100));
-                    updateDisplay();
-                }
-            });
+            window.addEventListener('deviceorientation', handleOrientation);
         }
     }
+    
+    // Fallback: simulate scanning
+    simulateScanning();
 });
 
-// Touch
-window.addEventListener('touchstart', (e)=>{
-    isDragging = true;
-    startY = e.touches[0].clientY;
-    startFreq = currentFreq;
-}, {passive:true});
+function handleOrientation(e){
+    if(e.alpha !== null) currentAlpha = e.alpha;
+    if(e.beta !== null) currentBeta = Math.abs(e.beta);
+    
+    if(gameActive) updateSignalStrength();
+}
 
-window.addEventListener('touchmove', (e)=>{
-    if(!isDragging) return;
-    const dy = startY - e.touches[0].clientY;
-    currentFreq = Math.max(0, Math.min(100, startFreq + (dy / window.innerHeight) * 100));
-    updateDisplay();
-}, {passive:true});
-
-window.addEventListener('touchend', ()=>isDragging = false);
-
-// Mouse
-window.addEventListener('mousedown', (e)=>{
-    isDragging = true;
-    startY = e.clientY;
-    startFreq = currentFreq;
-});
-
-window.addEventListener('mousemove', (e)=>{
-    if(!isDragging) return;
-    const dy = startY - e.clientY;
-    currentFreq = Math.max(0, Math.min(100, startFreq + (dy / window.innerHeight) * 100));
-    updateDisplay();
-});
-
-window.addEventListener('mouseup', ()=>isDragging = false);
-
-// Scroll
-window.addEventListener('wheel', (e)=>{
-    currentFreq = Math.max(0, Math.min(100, currentFreq - e.deltaY * 0.05));
-    updateDisplay();
-}, {passive:true});
-
-// Keyboard
-window.addEventListener('keydown', (e)=>{
-    if(e.key === 'ArrowUp'){
-        currentFreq = Math.min(100, currentFreq + 2);
-        updateDisplay();
-    } else if(e.key === 'ArrowDown'){
-        currentFreq = Math.max(0, currentFreq - 2);
-        updateDisplay();
-    } else if(e.key === ' ' || e.key === 'Enter'){
-        if(inHotZone) lockSignal();
+// Fallback scanning simulation
+function simulateScanning(){
+    if(typeof DeviceOrientationEvent === 'undefined'){
+        // No gyro - simulate with touch
+        let simulatedAlpha = 0;
+        let simulatedBeta = 30;
+        
+        window.addEventListener('touchmove', (e) => {
+            const x = e.touches[0].clientX / window.innerWidth;
+            const y = e.touches[0].clientY / window.innerHeight;
+            
+            simulatedAlpha = x * 360;
+            simulatedBeta = 30 + y * 120;
+            
+            currentAlpha = simulatedAlpha;
+            currentBeta = simulatedBeta;
+            updateSignalStrength();
+        }, {passive:true});
+        
+        // Auto-scan animation
+        let scanDirection = 1;
+        setInterval(() => {
+            if(!gameActive || signalLocked) return;
+            
+            simulatedAlpha += 2 * scanDirection;
+            if(simulatedAlpha > 360) simulatedAlpha = 0;
+            
+            simulatedBeta = 50 + Math.sin(Date.now() / 1000) * 40;
+            
+            currentAlpha = simulatedAlpha;
+            currentBeta = simulatedBeta;
+            updateSignalStrength();
+        }, 50);
     }
-});
+}
 
 // === FORM ===
-document.getElementById('entryForm').addEventListener('submit', (e)=>{
+document.getElementById('entryForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const data = {
         instagram: document.getElementById('ig').value,
@@ -805,11 +1081,11 @@ document.getElementById('entryForm').addEventListener('submit', (e)=>{
     window.location.href = `interview.html?ig=${encodeURIComponent(data.instagram)}&city=${encodeURIComponent(data.city)}&email=${encodeURIComponent(data.email)}`;
 });
 
-// Title flicker
-setInterval(()=>{
+// === TITLE FLICKER ===
+setInterval(() => {
     if(Math.random() > 0.95){
-        mainTitle.style.opacity = 0.3;
-        setTimeout(()=>mainTitle.style.opacity = 1, 50);
+        document.getElementById('mainTitle').style.opacity = 0.3;
+        setTimeout(() => document.getElementById('mainTitle').style.opacity = 1, 50);
     }
 }, 100);
 </script>
